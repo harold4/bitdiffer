@@ -28,7 +28,7 @@ namespace BitDiffer.Common.Misc
 			set { _name = value; }
 		}
 
-		public string AlignmentIdentifier 
+        public string AlignmentIdentifier 
 		{ 
 			get { return _alignmentIdentifier ?? _name; }
 			set { _alignmentIdentifier = value; } 

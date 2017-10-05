@@ -12,6 +12,7 @@ using BitDiffer.Common.Utility;
 using BitDiffer.Common.Misc;
 using BitDiffer.Common.Configuration;
 using System.IO;
+using System.Linq;
 
 namespace BitDiffer.Common.Model
 {
@@ -26,11 +27,13 @@ namespace BitDiffer.Common.Model
 		}
 
 		public RootDetail(string name)
+			: this()
 		{
 			_name = name;
 		}
 
 		public RootDetail(RootDetail parent, string name)
+			: this()
 		{
 			_parent = parent;
 			_name = name;
@@ -513,6 +516,46 @@ namespace BitDiffer.Common.Model
 			}
 		}
 
+		public virtual string GetHtmlChangeClass()
+		{
+			// Loop through each item to determine what the changes are for CSS classes,
+			// then loop again to output their markup.
+			ChangeType changes = ChangeType.None;
+			RootDetail eachItem = this;
+			while (eachItem != null)
+			{
+				changes |= eachItem.Change;
+				eachItem = (RootDetail)eachItem.NavigateForward;
+			}
+
+			// Switch off the changes so we can handle common cases easily, like a simple add/remove
+			switch (changes)
+			{
+				case ChangeType.None:
+					return "no-change";
+				case ChangeType.Added:
+					return "added";
+				case ChangeType.RemovedNonBreaking:
+					return "removed";
+				case ChangeType.RemovedBreaking:
+					return "removed breaking";
+				case ChangeType.ImplementationChanged:
+					return "implementation-changed";
+				case ChangeType.ContentChanged:
+					return "implementation-changed";
+				default:
+					// Divide the remaining cases into breaking and non-breaking
+					if (ChangeTypeUtil.HasBreaking(changes))
+					{
+						return "changed breaking";
+					}
+					else
+					{
+						return "changed";
+					}
+			}
+		}
+
 		public virtual string GetHtmlChangeDescription()
 		{
 			StringBuilder sb = new StringBuilder();
@@ -598,6 +641,9 @@ namespace BitDiffer.Common.Model
 
 		public virtual void WriteHtmlDescription(TextWriter tw, bool appendAllDeclarations, bool appendChildren)
 		{
+			tw.Write("<div class='item ");
+			tw.Write(GetHtmlChangeClass());
+			tw.Write("'>");
 			if (!this.ExcludeFromReport)
 			{
 				FilterStatus filterThisInstance;
@@ -618,7 +664,7 @@ namespace BitDiffer.Common.Model
 
 				if ((!appendChildren) || (filterThisInstance >= FilterStatus.DontCare))
 				{
-					tw.Write("<p class='hdr'>");
+					tw.Write("<h2>");
 
 					RootDetail namedItem;
 					if (appendAllDeclarations)
@@ -639,16 +685,22 @@ namespace BitDiffer.Common.Model
 						tw.Write(HtmlUtility.HtmlEncode(namedItem.GetTextTitle()));
 					}
 
-					tw.Write("</p>");
+					tw.Write("</h2>");
+
+					tw.Write("<div class='item-body'>");
 
 					RootDetail eachItem = this;
 					while (eachItem != null)
 					{
+						tw.Write("<div class='item-entry'>");
 						eachItem.WriteHtmlDeclaration(tw);
 						eachItem.WriteHtmlSummaryForChange(tw);
+						tw.Write("</div>");
 
 						eachItem = appendAllDeclarations ? (RootDetail)eachItem.NavigateForward : null;
 					}
+
+					tw.Write("</div>");
 				}
 			}
 
@@ -662,6 +714,8 @@ namespace BitDiffer.Common.Model
 					}
 				}
 			}
+
+			tw.Write("</div>");
 		}
 
 		private ChangeType CombineAllChangesThisInstanceGoingForward()
@@ -703,9 +757,9 @@ namespace BitDiffer.Common.Model
 
 		private void WriteHtmlDeclaration(TextWriter tw)
 		{
-			tw.Write("<p class='hdr2'>In assembly ");
+			tw.Write("<h3>");
 			tw.Write(this.DeclaringAssembly.Location);
-			tw.Write(":</p>");
+			tw.Write("</h3>");
 
 			if (this.Status == Status.Present)
 			{
@@ -717,15 +771,17 @@ namespace BitDiffer.Common.Model
 			}
 			else
 			{
-				tw.Write("<p>Not Defined</p>");
+				tw.Write("<p class='no-code'>Not Defined</p>");
 			}
+
+			tw.Write("</div>");
 		}
 
 		private void WriteHtmlSummaryForChange(TextWriter tw)
 		{
 			if (this.Change != ChangeType.None)
 			{
-				tw.Write("<p>Changes Found : ");
+				tw.Write("<p class='change-summary'>");
 				tw.Write(GetHtmlChangeDescription());
 				tw.Write("</p>");
 			}

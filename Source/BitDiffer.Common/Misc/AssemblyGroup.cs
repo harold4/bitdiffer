@@ -105,19 +105,19 @@ namespace BitDiffer.Common.Misc
 
 		public void WriteHtmlDescription(TextWriter tw)
 		{
-			tw.Write("<p class='hdr1'>Assembly '");
+			tw.Write("<h1>");
 			tw.Write(_name);
-			tw.Write("'</p>");
+			tw.Write("</h1>");
 
 			if (_hasErrors)
 			{
 				if (string.IsNullOrEmpty(_errorDetail))
 				{
-					tw.Write("<p style='color:red'>Failed to load one or more versions of this assembly. Examine the log messages pane for detailed error information.</p>");
+					tw.Write("<p class='error'>Failed to load one or more versions of this assembly. Examine the log messages pane for detailed error information.</p>");
 				}
 				else
 				{
-					tw.Write("<p style='color:red'>Failed to load one or more versions of this assembly: " + _errorDetail + "</p>");
+					tw.Write("<p class='error'>Failed to load one or more versions of this assembly: " + _errorDetail + "</p>");
 				}
 			}
 			else
@@ -135,7 +135,7 @@ namespace BitDiffer.Common.Misc
 				}
 				else if (ChangeTypeUtil.HasBreaking(_change))
 				{
-					tw.Write("<p style='color:red'>Breaking changes were found between versions of this assembly.</p>");
+					tw.Write("<p class='brkchg'>Breaking changes were found between versions of this assembly.</p>");
 				}
 				else if (ChangeTypeUtil.HasNonBreaking(_change))
 				{
@@ -159,12 +159,14 @@ namespace BitDiffer.Common.Misc
 
 		public void WriteHtmlReport(TextWriter tw)
 		{
+			tw.Write("<div class='report'>");
 			WriteHtmlDescription(tw);
 
 			if (_assemblies.Count > 0)
 			{
 				_assemblies[0].WriteHtmlDescription(tw, true, true);
 			}
+			tw.Write("</div>");
 		}
 	}
 }
