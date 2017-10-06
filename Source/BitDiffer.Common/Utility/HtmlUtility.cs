@@ -58,7 +58,7 @@ namespace BitDiffer.Common.Utility
 			
 			//tw.Write(".item-body { display: flex; flex-direction: row; }");
 			//tw.Write(".item-body > * { flex: 1; margin-right: 1ex; }");
-			tw.Write(".item.changed .item-entry { display: grid; grid-template-columns: 1fr 3fr; }");
+			tw.Write(".item.changed > .item-body > .item-entry { display: grid; grid-template-columns: 1fr 3fr; }");
 
 			tw.Write(".item.added h3 {  display: none; }");
 			tw.Write(".item.removed h3 {  display: none; }");
