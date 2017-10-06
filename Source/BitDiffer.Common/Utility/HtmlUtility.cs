@@ -67,7 +67,7 @@ namespace BitDiffer.Common.Utility
 
 			tw.WriteLine(".code { font-family: Consolas, 'Courier New'; color: black; }");
 			tw.WriteLine(".keyword { color:blue; }");
-			tw.WriteLine(".error { color: red; }");
+			tw.WriteLine(".error { font-family: Consolas, 'Courier New'; color: red; white-space: pre; }");
 			tw.WriteLine(".brkchg { color: red; }");
 			tw.WriteLine(".usertype { color:#2B91AF; }");
 			tw.WriteLine(".string { color:#A31515; }");
