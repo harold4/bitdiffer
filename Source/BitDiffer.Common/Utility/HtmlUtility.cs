@@ -16,63 +16,64 @@ namespace BitDiffer.Common.Utility
 
 		public static void EmbedClassicStylesheet(TextWriter tw)
 		{
-			tw.Write("<style type='text/css'><!-- ");
-			tw.Write("h1 { font-size: inherit; font-weight:bold; background-color:#B5D2FF; padding: 5 2 5 2; } ");
-			tw.Write("h1::before { content: 'Assembly \\'' } ");
-			tw.Write("h1::after { content: '\\'' } ");
-			tw.Write("h2 { font-size: inherit; font-weight:bold; background-color:#F0F0FF; padding: 5 2 5 2; } ");
-			tw.Write("h3 { font-size: inherit; font-weight:bold; } ");
-			tw.Write("h3::before { content: 'In assembly ' } ");
-			tw.Write("h3::after { content: ':' } ");
+			// TODO make this an embedded resource .css file so it's easy to edit.
+			tw.WriteLine("<style type='text/css'>");
+			tw.WriteLine("h1 { font-size: inherit; font-weight:bold; background-color:#B5D2FF; padding: 5 2 5 2; }");
+			tw.WriteLine("h1::before { content: 'Assembly \\'' }");
+			tw.WriteLine("h1::after { content: '\\'' }");
+			tw.WriteLine("h2 { font-size: inherit; font-weight:bold; background-color:#F0F0FF; padding: 5 2 5 2; }");
+			tw.WriteLine("h3 { font-size: inherit; font-weight:bold; }");
+			tw.WriteLine("h3::before { content: 'In assembly ' }");
+			tw.WriteLine("h3::after { content: ':' }");
 
-			tw.Write("body { font-family:Tahoma; font-size: 9pt; } ");
+			tw.WriteLine("body { font-family:Tahoma; font-size: 9pt; }");
 
-			tw.Write(".code { font-family: Consolas, 'Courier New'; color: black; } ");
-			tw.Write(".keyword { color:blue; } ");
-			tw.Write(".error, .brkchg { color: red; } ");
-			tw.Write(".usertype { color:#2B91AF; } ");
-			tw.Write(".string { color:#A31515; } ");
-			tw.Write(".visibility { color:blue; } ");
+			tw.WriteLine(".code { font-family: Consolas, 'Courier New'; color: black; }");
+			tw.WriteLine(".keyword { color:blue; }");
+			tw.WriteLine(".error, .brkchg { color: red; }");
+			tw.WriteLine(".usertype { color:#2B91AF; }");
+			tw.WriteLine(".string { color:#A31515; }");
+			tw.WriteLine(".visibility { color:blue; }");
 
-			tw.Write(".changes-found { display: none; }");
-			tw.Write(".change-summary::before { content: 'Changes Found : '; }");
-			tw.Write("--></style>");
+			tw.WriteLine(".changes-found { display: none; }");
+			tw.WriteLine(".change-summary::before { content: 'Changes Found : '; }");
+			tw.WriteLine(".item-change { display: none; }");
+			tw.WriteLine("</style>");
 		}
 
 		public static void EmbedSideBySideStylesheet(TextWriter tw)
 		{
-			tw.Write("<style type='text/css'><!-- ");
-			tw.Write("h1, h2, h3 { font-size: inherit; font-weight: bold; line-height: 125%; } ");
-			tw.Write("h1 { background-color:#B5D2FF; padding: 5 2 5 2; } ");
-			tw.Write("h2 { background-color:#F0F0FF; padding: 5 2 5 2; } ");
+			// TODO make this an embedded resource .css file so it's easy to edit.
+			tw.WriteLine("<style type='text/css'>");
+			tw.WriteLine("h1, h2, h3 { font-size: inherit; font-weight: bold; line-height: 125%; }");
+			tw.WriteLine("h1 { background-color:#B5D2FF; padding: 5 2 5 2; }");
+			tw.WriteLine("h2 { background-color:#F0F0FF; padding: 5 2 5 2; }");
 
-			tw.Write("body { font-family:Tahoma; font-size: 9pt; } ");
+			tw.WriteLine("body { font-family:Tahoma; font-size: 9pt; }");
 
-			tw.Write(".item > h2::before { font-weight: normal; font-style: italic; font-size: 85%; margin-right: 1ex; } ");
-			tw.Write(".item.added > h2::before { content: 'Added'; color: blue; } ");
-			tw.Write(".item.removed > h2::before { content: 'Removed';  color: darkred; } ");
-			tw.Write(".item.removed.breaking > h2::before { content: 'Removed (Breaking)';  color: red; } ");
-			tw.Write(".item.changed > h2::before { content: 'Changed'; color: green; } ");
-			tw.Write(".item.changed.breaking > h2::before { content: 'Changed (Breaking)';  color: red; } ");
-			tw.Write(".item.implementation-changed > h2::before { content: 'Implementation changed'; color: #CCC; } ");
-			
-			//tw.Write(".item-body { display: flex; flex-direction: row; }");
-			//tw.Write(".item-body > * { flex: 1; margin-right: 1ex; }");
-			tw.Write(".item.changed > .item-body > .item-entry { display: grid; grid-template-columns: 1fr 3fr; }");
+			tw.WriteLine(".item > h2 > .item-change { font-weight: normal; font-style: italic; font-size: 85%; margin-right: 1ex; }");
+			tw.WriteLine(".item.added > h2 > .item-change { color: blue; }");
+			tw.WriteLine(".item.removed > h2 > .item-change { color: darkred; }");
+			tw.WriteLine(".item.removed.breaking > h2 > .item-change { color: red; }");
+			tw.WriteLine(".item.changed > h2 > .item-change { color: green; }");
+			tw.WriteLine(".item.changed.breaking > h2 > .item-change { color: red; }");
+			tw.WriteLine(".item.implementation-changed > h2 > .item-change { color: #CCC; }");
 
-			tw.Write(".item.added h3 {  display: none; }");
-			tw.Write(".item.removed h3 {  display: none; }");
-			tw.Write(".no-code { display: none; }");
+			tw.WriteLine(".item.changed > .item-body > .item-entry { display: grid; grid-template-columns: 1fr 3fr; }");
 
-			tw.Write(".code { font-family: Consolas, 'Courier New'; color: black; } ");
-			tw.Write(".keyword { color:blue; } ");
-			tw.Write(".error { color: red; } ");
-			tw.Write(".brkchg { color: red; } ");
-			tw.Write(".usertype { color:#2B91AF; } ");
-			tw.Write(".string { color:#A31515; } ");
-			tw.Write(".visibility { color:blue; } ");
-			tw.Write(".change-summary { display: none; }");
-			tw.Write("--></style>");
+			tw.WriteLine(".item.added h3 {  display: none; }");
+			tw.WriteLine(".item.removed h3 {  display: none; }");
+			tw.WriteLine(".no-code { display: none; }");
+
+			tw.WriteLine(".code { font-family: Consolas, 'Courier New'; color: black; }");
+			tw.WriteLine(".keyword { color:blue; }");
+			tw.WriteLine(".error { color: red; }");
+			tw.WriteLine(".brkchg { color: red; }");
+			tw.WriteLine(".usertype { color:#2B91AF; }");
+			tw.WriteLine(".string { color:#A31515; }");
+			tw.WriteLine(".visibility { color:blue; }");
+			tw.WriteLine(".change-summary { display: none; }");
+			tw.WriteLine("</style>");
 		}
 
 		public static void WriteHtmlEnd(TextWriter tw)

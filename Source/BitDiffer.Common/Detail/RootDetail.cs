@@ -516,7 +516,7 @@ namespace BitDiffer.Common.Model
 			}
 		}
 
-		public virtual string GetHtmlChangeClass()
+		private void GetHtmlNestedChangeStatus(out string className, out string text)
 		{
 			// Loop through each item to determine what the changes are for CSS classes,
 			// then loop again to output their markup.
@@ -532,27 +532,42 @@ namespace BitDiffer.Common.Model
 			switch (changes)
 			{
 				case ChangeType.None:
-					return "no-change";
+					className = null;
+					text = null;
+					break;
 				case ChangeType.Added:
-					return "added";
+					className = "added";
+					text = "Added";
+					break;
 				case ChangeType.RemovedNonBreaking:
-					return "removed";
+					className = "removed";
+					text = "Removed";
+					break;
 				case ChangeType.RemovedBreaking:
-					return "removed breaking";
+					className = "removed breaking";
+					text = "Removed (Breaking)";
+					break;
 				case ChangeType.ImplementationChanged:
-					return "implementation-changed";
+					className = "implementation-changed";
+					text = "Implementation changed";
+					break;
 				case ChangeType.ContentChanged:
-					return "implementation-changed";
+					className = "implementation-changed";
+					text = "Content changed";
+					break;
 				default:
 					// Divide the remaining cases into breaking and non-breaking
 					if (ChangeTypeUtil.HasBreaking(changes))
 					{
-						return "changed breaking";
+						className = "changed breaking";
+						text = "Changed (Breaking)";
 					}
 					else
 					{
-						return "changed";
+						className = "changed";
+						text = "Changed";
 					}
+					break;
 			}
 		}
 
@@ -641,9 +656,15 @@ namespace BitDiffer.Common.Model
 
 		public virtual void WriteHtmlDescription(TextWriter tw, bool appendAllDeclarations, bool appendChildren)
 		{
-			tw.Write("<div class='item ");
-			tw.Write(GetHtmlChangeClass());
-			tw.Write("'>");
+			string className, text;
+			GetHtmlNestedChangeStatus(out className, out text);
+			tw.Write("<div class='item");
+			if (className != null)
+			{
+				tw.Write(' ');
+				tw.Write(className);
+			}
+			tw.WriteLine("'>");
 			if (!this.ExcludeFromReport)
 			{
 				FilterStatus filterThisInstance;
@@ -666,6 +687,14 @@ namespace BitDiffer.Common.Model
 				{
 					tw.Write("<h2>");
 
+					if (text != null)
+					{
+						tw.Write("<span class='item-change'>");
+						tw.Write(text);
+						tw.Write("</span>");
+					}
+					
+
 					RootDetail namedItem;
 					if (appendAllDeclarations)
 					{
@@ -676,6 +705,7 @@ namespace BitDiffer.Common.Model
 						namedItem = this;
 					}
 
+					tw.Write("<span class='name'>");
 					if ((namedItem == null) || (namedItem.Status == Status.Missing))
 					{
 						tw.Write(this.Name);
@@ -684,6 +714,7 @@ namespace BitDiffer.Common.Model
 					{
 						tw.Write(HtmlUtility.HtmlEncode(namedItem.GetTextTitle()));
 					}
+					tw.Write("</span>");
 
 					tw.Write("</h2>");
 
@@ -700,7 +731,7 @@ namespace BitDiffer.Common.Model
 						eachItem = appendAllDeclarations ? (RootDetail)eachItem.NavigateForward : null;
 					}
 
-					tw.Write("</div>");
+					tw.WriteLine("</div>");
 				}
 			}
 
@@ -715,7 +746,7 @@ namespace BitDiffer.Common.Model
 				}
 			}
 
-			tw.Write("</div>");
+			tw.WriteLine("</div>");
 		}
 
 		private ChangeType CombineAllChangesThisInstanceGoingForward()
@@ -773,8 +804,6 @@ namespace BitDiffer.Common.Model
 			{
 				tw.Write("<p class='no-code'>Not Defined</p>");
 			}
-
-			tw.Write("</div>");
 		}
 
 		private void WriteHtmlSummaryForChange(TextWriter tw)
