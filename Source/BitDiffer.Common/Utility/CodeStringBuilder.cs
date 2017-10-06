@@ -343,6 +343,14 @@ namespace BitDiffer.Common.Utility
 				{
 					return "string";
 				}
+				else if (type == typeof(byte))
+				{
+					return "byte";
+				}
+				else if (type == typeof(short))
+				{
+					return "short";
+				}
 				else if (type == typeof(int))
 				{
 					return "int";
@@ -359,10 +367,6 @@ namespace BitDiffer.Common.Utility
 				{
 					return "bool";
 				}
-				else if (type == typeof(byte))
-				{
-					return "byte";
-				}
 				else if (type == typeof(DateTime))
 				{
 					return "DateTime";
@@ -374,6 +378,18 @@ namespace BitDiffer.Common.Utility
 				else if (type == typeof(double))
 				{
 					return "double";
+				}
+				else if (type == typeof(float))
+				{
+					return "float";
+				}
+				else if (type == typeof(sbyte))
+				{
+					return "sbyte";
+				}
+				else if (type == typeof(ushort))
+				{
+					return "ushort";
 				}
 				else if (type == typeof(uint))
 				{
