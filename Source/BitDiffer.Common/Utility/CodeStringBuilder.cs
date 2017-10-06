@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Reflection;
 
@@ -321,6 +322,23 @@ namespace BitDiffer.Common.Utility
 
 		private string GetTypeNameAsKeyword(Type type)
 		{
+			if (type.IsArray)
+			{
+				// simplify arrays
+				Type elementType = type.GetElementType();
+				if (elementType != null)
+				{
+					string strType = GetTypeNameAsKeyword(elementType);
+					if (strType != null)
+					{
+						return strType + "[]";
+					}
+				}
+
+				// Must be System.Array or similar.
+				return null;
+			}
+
 			if (type.IsGenericType)
 			{
 				if (type.GetGenericTypeDefinition() == typeof(Nullable<>))
