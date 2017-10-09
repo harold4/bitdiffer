@@ -28,7 +28,7 @@ namespace BitDiffer.Common.Utility
 
 			tw.WriteLine("body { font-family:Tahoma; font-size: 9pt; }");
 
-			tw.WriteLine(".code { font-family: Consolas, 'Courier New'; color: black; }");
+			tw.WriteLine(".code { font-family: Consolas, 'Courier New'; }");
 			tw.WriteLine(".keyword { color:blue; }");
 			tw.WriteLine(".error, .brkchg { color: red; }");
 			tw.WriteLine(".usertype { color:#2B91AF; }");
@@ -65,7 +65,7 @@ namespace BitDiffer.Common.Utility
 			tw.WriteLine(".item.removed h3 {  display: none; }");
 			tw.WriteLine(".no-code { display: none; }");
 
-			tw.WriteLine(".code { font-family: Consolas, 'Courier New'; color: black; }");
+			tw.WriteLine(".code { font-family: Consolas, 'Courier New'; }");
 			tw.WriteLine(".keyword { color:blue; }");
 			tw.WriteLine(".error { font-family: Consolas, 'Courier New'; color: red; white-space: pre; }");
 			tw.WriteLine(".brkchg { color: red; }");
