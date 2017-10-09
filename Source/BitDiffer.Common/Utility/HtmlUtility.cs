@@ -10,6 +10,7 @@ namespace BitDiffer.Common.Utility
 		public static void WriteHtmlStart(TextWriter tw)
 		{
 			tw.Write("<html><head>");
+			tw.Write("<meta http-equiv='X-UA-Compatible' content='IE=edge' />"); // use as modern an HTML engine as possible
 			EmbedSideBySideStylesheet(tw);
 			tw.Write("</head><body>");
 		}
@@ -18,10 +19,10 @@ namespace BitDiffer.Common.Utility
 		{
 			// TODO make this an embedded resource .css file so it's easy to edit.
 			tw.WriteLine("<style type='text/css'>");
-			tw.WriteLine("h1 { font-size: inherit; font-weight:bold; background-color:#B5D2FF; padding: 5 2 5 2; }");
+			tw.WriteLine("h1 { font-size: inherit; font-weight:bold; background-color:#B5D2FF; padding: 5px 2px; }");
 			tw.WriteLine("h1::before { content: 'Assembly \\'' }");
 			tw.WriteLine("h1::after { content: '\\'' }");
-			tw.WriteLine("h2 { font-size: inherit; font-weight:bold; background-color:#F0F0FF; padding: 5 2 5 2; }");
+			tw.WriteLine("h2 { font-size: inherit; font-weight:bold; background-color:#F0F0FF; padding: 5px 2px; }");
 			tw.WriteLine("h3 { font-size: inherit; font-weight:bold; }");
 			tw.WriteLine("h3::before { content: 'In assembly ' }");
 			tw.WriteLine("h3::after { content: ':' }");
@@ -45,12 +46,14 @@ namespace BitDiffer.Common.Utility
 		{
 			// TODO make this an embedded resource .css file so it's easy to edit.
 			tw.WriteLine("<style type='text/css'>");
-			tw.WriteLine("h1, h2, h3 { font-size: inherit; font-weight: bold; line-height: 125%; }");
-			tw.WriteLine("h1 { background-color:#B5D2FF; padding: 5 2 5 2; }");
-			tw.WriteLine("h2 { background-color:#F0F0FF; padding: 5 2 5 2; }");
 
 			tw.WriteLine("body { font-family:Tahoma; font-size: 9pt; }");
 
+			tw.WriteLine("h1, h2 { padding: 0.5ex 0.2ex; }");
+
+			tw.WriteLine("h1 { background-color:#B5D2FF; }");
+
+			tw.WriteLine("h2 { font-size: inherit; font-weight: bold; background-color:#F0F0FF; line-height: 125%; }");
 			tw.WriteLine(".item > h2 > .item-change { font-weight: normal; font-style: italic; font-size: 85%; margin-right: 1ex; }");
 			tw.WriteLine(".item.added > h2 > .item-change { color: blue; }");
 			tw.WriteLine(".item.removed > h2 > .item-change { color: darkred; }");
@@ -61,6 +64,7 @@ namespace BitDiffer.Common.Utility
 
 			tw.WriteLine(".item.changed > .item-body > .item-entry { display: grid; grid-template-columns: 1fr 3fr; }");
 
+			tw.WriteLine("h3 { font-size: inherit; font-weight: bold; }");
 			tw.WriteLine(".item.added h3 {  display: none; }");
 			tw.WriteLine(".item.removed h3 {  display: none; }");
 			tw.WriteLine(".no-code { display: none; }");
