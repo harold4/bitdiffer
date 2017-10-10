@@ -25,6 +25,16 @@ namespace BitDiffer.Common.Utility
 			return false;
 		}
 
+		public static bool IsNonBreakingAddRemove(ChangeType change)
+		{
+			if (change == ChangeType.Added || change == ChangeType.RemovedNonBreaking)
+			{
+				return true;
+			}
+
+			return false;
+		}
+
 		public static bool HasBreaking(ChangeType change)
 		{
 			return (change != ChangeType.None) && ((change & breakingChangesMask) != 0);
@@ -49,5 +59,53 @@ namespace BitDiffer.Common.Utility
 					yield return flag;
 		}
 
+		public static string GetChangeClass(ChangeType change)
+		{
+			switch (change)
+			{
+				case ChangeType.None:
+					return null;
+				case ChangeType.Added:
+					return "added";
+				case ChangeType.RemovedNonBreaking:
+					return "removed";
+				case ChangeType.RemovedBreaking:
+					return "removed breaking";
+				case ChangeType.ImplementationChanged:
+					return "implementation-changed";
+				case ChangeType.ContentChanged:
+					return "implementation-changed";
+				default:
+					// Divide the remaining cases into breaking and non-breaking
+					return ChangeTypeUtil.HasBreaking(change) ? "changed breaking" : "changed";
+			}
+		}
+
+		/// <summary>
+		/// Brief text (added/removed/changed)
+		/// </summary>
+		/// <param name="change"></param>
+		/// <returns></returns>
+		public static string GetSummaryText(ChangeType change)
+		{
+			switch (change)
+			{
+				case ChangeType.None:
+					return null;
+				case ChangeType.Added:
+					return "Added";
+				case ChangeType.RemovedNonBreaking:
+					return "Removed";
+				case ChangeType.RemovedBreaking:
+					return "Removed (Breaking)";
+				case ChangeType.ImplementationChanged:
+					return "Implementation changed";
+				case ChangeType.ContentChanged:
+					return "Content changed";
+				default:
+					// Divide the remaining cases into breaking and non-breaking
+					return ChangeTypeUtil.HasBreaking(change) ? "Changed (Breaking)" : "Changed";
+			}
+		}
 	}
 }

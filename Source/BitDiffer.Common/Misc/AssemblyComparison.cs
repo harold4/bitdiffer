@@ -98,15 +98,37 @@ namespace BitDiffer.Common.Misc
 			}
 		}
 
+		public void WriteMarkdownReport(string fileName)
+		{
+			Log.Info("Writing Markdown change report to {0}", fileName);
+
+			using (FileStream fs = File.Open(fileName, FileMode.Create))
+			{
+				using (StreamWriter sw = new StreamWriter(fs))
+				{
+					foreach (AssemblyGroup group in _groups)
+					{
+						group.WriteMarkdownReport(sw);
+					}
+				}
+			}
+		}
+
 		public void WriteReport(string fileName, AssemblyComparisonXmlWriteMode assemblyComparisonXmlWriteMode)
 		{
-			if (Path.GetExtension(fileName).ToLower() == ".html")
+			switch (Path.GetExtension(fileName)?.ToLowerInvariant())
 			{
-				WriteHtmlReport(fileName);
-			}
-			else
-			{
-				WriteXmlReport(fileName, AssemblyComparisonXmlWriteMode.Normal);
+				case ".htm":
+				case ".html":
+					WriteHtmlReport(fileName);
+					break;
+				case ".md":
+				case ".markdown":
+					WriteMarkdownReport(fileName);
+					break;
+				default:
+					WriteXmlReport(fileName, AssemblyComparisonXmlWriteMode.Normal);
+					break;
 			}
 		}
 	}

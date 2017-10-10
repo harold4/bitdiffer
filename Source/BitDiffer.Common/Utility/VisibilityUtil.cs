@@ -174,5 +174,27 @@ namespace BitDiffer.Common.Utility
 
 			return visibility;
 		}
-    }
+
+		public static string GetVisibilityChangeText(RootDetail from, RootDetail to)
+		{
+			return GetVisibilityChangeText(((IHaveVisibility)from).Visibility, ((IHaveVisibility)to).Visibility);
+		}
+
+		public static string GetVisibilityChangeText(IHaveVisibility from, IHaveVisibility to)
+		{
+			return GetVisibilityChangeText(from.Visibility, to.Visibility);
+		}
+
+		public static string GetVisibilityChangeText(Visibility from, Visibility to)
+		{
+			// When collapsing properties the visibility of the property itself (as opposed to the child accessors) may actually
+			// be the same....
+			if (from == to)
+			{
+				return "Visibility not changed";
+			}
+
+			return $"Visibility was changed from {from.ToString().ToLower()} to {to.ToString().ToLower()}";
+		}
+	}
 }

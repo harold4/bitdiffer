@@ -9,6 +9,9 @@ namespace BitDiffer.Common.Utility
 	{
 		Text = 1,
 		Html = 2,
-		Both = AppendMode.Text | AppendMode.Html
+		Markdown = 4,
+
+		NonText = AppendMode.Html | AppendMode.Markdown,
+		All = AppendMode.Text | AppendMode.Html | AppendMode.Markdown
 	};
 }

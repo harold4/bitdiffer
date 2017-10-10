@@ -60,10 +60,10 @@ namespace BitDiffer.Common.Model
 
 			AppendAttributesDeclaration(csb);
 
-			csb.Mode = AppendMode.Html;
+			csb.Mode = AppendMode.NonText;
 			csb.AppendVisibility(_visibility);
 			csb.AppendText(" ");
-			csb.Mode = AppendMode.Both;
+			csb.Mode = AppendMode.All;
 
 			csb.AppendType(pi.PropertyType);
 			csb.AppendText(" ");
@@ -76,7 +76,7 @@ namespace BitDiffer.Common.Model
 				csb.AppendText("]");
 			}
 
-			csb.Mode = AppendMode.Html;
+			csb.Mode = AppendMode.NonText;
 
 			csb.AppendNewline();
 			csb.AppendText("{");
@@ -100,6 +100,7 @@ namespace BitDiffer.Common.Model
 
 			_declaration = csb.ToString();
 			_declarationHtml = csb.ToHtmlString();
+			_declarationMarkdown = csb.ToMarkdownString();
 		}
 
 		public override bool CollapseChildren

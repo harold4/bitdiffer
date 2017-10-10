@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using BitDiffer.Common.Misc;
 
 namespace BitDiffer.Common.Utility
 {
@@ -48,8 +49,9 @@ namespace BitDiffer.Common.Utility
 			tw.WriteLine("<style type='text/css'>");
 
 			tw.WriteLine("body { font-family:Tahoma; font-size: 9pt; }");
+			tw.WriteLine(".report:not(:first-child) { margin-top: 5em; }"); // in case you generate more than 1 per file
 
-			tw.WriteLine("h1, h2 { padding: 0.5ex 0.2ex; }");
+			tw.WriteLine("h1, h2 { padding: 0.5ex; }");
 
 			tw.WriteLine("h1 { background-color:#B5D2FF; }");
 

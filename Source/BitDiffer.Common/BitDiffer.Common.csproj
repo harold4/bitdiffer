@@ -68,6 +68,7 @@
     <Compile Include="Configuration\AppDomainIsolationLevel.cs" />
     <Compile Include="Configuration\ComparisonFilter.cs" />
     <Compile Include="Configuration\DiffConfig.cs" />
+    <Compile Include="Detail\AttributeType.cs" />
     <Compile Include="Detail\CodeDetail.cs" />
     <Compile Include="Detail\EnumItemDetail.cs" />
     <Compile Include="Detail\ParentDetail.cs" />

@@ -124,6 +124,25 @@ namespace BitDiffer.Common.Model
 			get { return true; }
 		}
 
+
+		protected virtual bool ShouldWriteMarkdownSummaryForChange
+		{
+			get
+			{
+				// Don't write simple changes in Markdown.  The header will have this information.
+				switch (this.Change)
+				{
+					case ChangeType.None:
+					case ChangeType.Added:
+					case ChangeType.RemovedNonBreaking:
+					case ChangeType.RemovedBreaking:
+						return false;
+					default:
+						return true;
+				}
+			}
+		}
+
 		protected ChangeType PerformCompareInternal(ICanCompare from, bool suppressBreakingChanges)
 		{
 			if (from == null)
@@ -267,7 +286,7 @@ namespace BitDiffer.Common.Model
 				{
 					_changeThisInstance |= ChangeType.VisibilityChangedBreaking;
 				}
-				
+
 				if ((change & ChangeType.VisibilityChangedNonBreaking) != 0)
 				{
 					if ((_changeThisInstance & ChangeType.VisibilityChangedBreaking) == 0)
@@ -378,6 +397,11 @@ namespace BitDiffer.Common.Model
 			get { return false; }
 		}
 
+		public virtual bool ExcludeChildrenFromReport
+		{
+			get { return this.CollapseChildren || ChangeTypeUtil.IsAddRemove(CombineAllChangesThisInstanceGoingForward()); }
+		}
+
 		public virtual bool ExcludeFromReport
 		{
 			get { return false; }
@@ -449,36 +473,36 @@ namespace BitDiffer.Common.Model
 
 			if ((this.Change & ChangeType.Added) != 0)
 			{
-				AppendClause(sb, "Added");
+				AppendClauseText(sb, "Added");
 			}
 
 			if (((this.Change & ChangeType.RemovedBreaking) != 0) || ((this.Change & ChangeType.RemovedNonBreaking) != 0))
 			{
-				AppendClause(sb, "Removed");
+				AppendClauseText(sb, "Removed");
 			}
 
 			if ((this.Change & ChangeType.ContentChanged) != 0)
 			{
-				AppendClause(sb, "Content changed");
+				AppendClauseText(sb, "Content changed");
 			}
 
 			if ((this.Change & ChangeType.ValueChangedBreaking) != 0)
 			{
-				AppendClause(sb, "Value has a breaking change");
+				AppendClauseText(sb, "Value has a breaking change");
 			}
 			else if ((this.Change & ChangeType.ValueChangedNonBreaking) != 0)
 			{
-				AppendClause(sb, "Value has a non-breaking change");
+				AppendClauseText(sb, "Value has a non-breaking change");
 			}
 
 			if (((this.Change & ChangeType.DeclarationChangedBreaking) != 0) || ((this.Change & ChangeType.DeclarationChangedNonBreaking) != 0))
 			{
-				AppendClause(sb, "Declaration changed");
+				AppendClauseText(sb, "Declaration changed");
 			}
 
 			if (((this.Change & ChangeType.VisibilityChangedBreaking) != 0) || ((this.Change & ChangeType.VisibilityChangedNonBreaking) != 0))
 			{
-				AppendClause(sb, GetVisibilityChangeText(previous));
+				AppendClauseText(sb, VisibilityUtil.GetVisibilityChangeText(previous, this));
 			}
 
 			if (((this.Change & ChangeType.MembersChangedBreaking) != 0) || ((this.Change & ChangeType.MembersChangedNonBreaking) != 0))
@@ -488,38 +512,19 @@ namespace BitDiffer.Common.Model
 
 			if ((this.Change & ChangeType.ImplementationChanged) != 0)
 			{
-				AppendClause(sb, "Implementation changed");
+				AppendClauseText(sb, "Implementation changed");
 			}
 
 			if ((this.Change & ChangeType.AttributesChanged) != 0)
 			{
-				AppendClause(sb, "Attributes changed");
+				AppendClauseText(sb, "Attributes changed");
 			}
 
 			return sb.ToString();
 		}
 
-		private string GetVisibilityChangeText(RootDetail previous)
+		private ChangeType CalculateNestedChanges()
 		{
-			// When collapsing properties the visibility of the property itself (as opposed to the child accessors) may actually
-			// be the same....
-			Visibility prev = ((IHaveVisibility)previous).Visibility;
-			Visibility mine = ((IHaveVisibility)this).Visibility;
-			
-			if (prev == mine)
-			{
-				return "Visibility changed";
-			}
-			else
-			{
-				return string.Format("Visibility was changed from {0} to {1}", prev.ToString().ToLower(), mine.ToString().ToLower());
-			}
-		}
-
-		private void GetHtmlNestedChangeStatus(out string className, out string text)
-		{
-			// Loop through each item to determine what the changes are for CSS classes,
-			// then loop again to output their markup.
 			ChangeType changes = ChangeType.None;
 			RootDetail eachItem = this;
 			while (eachItem != null)
@@ -528,47 +533,7 @@ namespace BitDiffer.Common.Model
 				eachItem = (RootDetail)eachItem.NavigateForward;
 			}
 
-			// Switch off the changes so we can handle common cases easily, like a simple add/remove
-			switch (changes)
-			{
-				case ChangeType.None:
-					className = null;
-					text = null;
-					break;
-				case ChangeType.Added:
-					className = "added";
-					text = "Added";
-					break;
-				case ChangeType.RemovedNonBreaking:
-					className = "removed";
-					text = "Removed";
-					break;
-				case ChangeType.RemovedBreaking:
-					className = "removed breaking";
-					text = "Removed (Breaking)";
-					break;
-				case ChangeType.ImplementationChanged:
-					className = "implementation-changed";
-					text = "Implementation changed";
-					break;
-				case ChangeType.ContentChanged:
-					className = "implementation-changed";
-					text = "Content changed";
-					break;
-				default:
-					// Divide the remaining cases into breaking and non-breaking
-					if (ChangeTypeUtil.HasBreaking(changes))
-					{
-						className = "changed breaking";
-						text = "Changed (Breaking)";
-					}
-					else
-					{
-						className = "changed";
-						text = "Changed";
-					}
-					break;
-			}
+			return changes;
 		}
 
 		public virtual string GetHtmlChangeDescription()
@@ -618,7 +583,7 @@ namespace BitDiffer.Common.Model
 
 			if (((this.Change & ChangeType.VisibilityChangedBreaking) != 0) || ((this.Change & ChangeType.VisibilityChangedNonBreaking) != 0))
 			{
-				AppendClauseHtml(sb, ((this.Change & ChangeType.VisibilityChangedBreaking) != 0), GetVisibilityChangeText(previous));
+				AppendClauseHtml(sb, ((this.Change & ChangeType.VisibilityChangedBreaking) != 0), VisibilityUtil.GetVisibilityChangeText(previous, this));
 			}
 
 			if (((this.Change & ChangeType.MembersChangedBreaking) != 0) || ((this.Change & ChangeType.MembersChangedNonBreaking) != 0))
@@ -631,7 +596,7 @@ namespace BitDiffer.Common.Model
 
 		protected virtual void GetTextDescriptionBriefMembers(StringBuilder sb)
 		{
-			AppendClause(sb, "Members changed");
+			AppendClauseText(sb, "Members changed");
 		}
 
 		protected virtual void GetHtmlChangeDescriptionBriefMembers(StringBuilder sb)
@@ -654,15 +619,22 @@ namespace BitDiffer.Common.Model
 			return _name;
 		}
 
+		public virtual string GetMarkdownDeclaration()
+		{
+			// Default to text declaration
+			return GetTextDeclaration();
+		}
+
 		public virtual void WriteHtmlDescription(TextWriter tw, bool appendAllDeclarations, bool appendChildren)
 		{
-			string className, text;
-			GetHtmlNestedChangeStatus(out className, out text);
+			ChangeType nestedChange = CalculateNestedChanges();
+
+			string changeClass = ChangeTypeUtil.GetChangeClass(nestedChange);
 			tw.Write("<div class='item");
-			if (className != null)
+			if (changeClass != null)
 			{
 				tw.Write(' ');
-				tw.Write(className);
+				tw.Write(changeClass);
 			}
 			tw.WriteLine("'>");
 			if (!this.ExcludeFromReport)
@@ -685,15 +657,15 @@ namespace BitDiffer.Common.Model
 
 				if ((!appendChildren) || (filterThisInstance >= FilterStatus.DontCare))
 				{
+					string nestedChangeText = ChangeTypeUtil.GetSummaryText(nestedChange);
 					tw.Write("<h2>");
-
-					if (text != null)
+					if (nestedChangeText != null)
 					{
 						tw.Write("<span class='item-change'>");
-						tw.Write(text);
+						tw.Write(HtmlUtility.HtmlEncode(nestedChangeText));
 						tw.Write("</span>");
 					}
-					
+
 
 					RootDetail namedItem;
 					if (appendAllDeclarations)
@@ -735,11 +707,11 @@ namespace BitDiffer.Common.Model
 				}
 			}
 
-			if (appendChildren && !this.CollapseChildren && !ChangeTypeUtil.IsAddRemove(CombineAllChangesThisInstanceGoingForward()))
+			if (appendChildren && !this.ExcludeChildrenFromReport)
 			{
 				foreach (RootDetail child in FilterChildrenInAll<RootDetail>())
 				{
-//					if ((child.FullNameRoot) || (child.GetStrongestFilterStatus() != FilterStatus.ExcludedButIncludeForChildren)) // Dont include public stuff inside internal classes for -publiconly 
+					//					if ((child.FullNameRoot) || (child.GetStrongestFilterStatus() != FilterStatus.ExcludedButIncludeForChildren)) // Dont include public stuff inside internal classes for -publiconly 
 					{
 						child.WriteHtmlDescription(tw, appendAllDeclarations, appendChildren);
 					}
@@ -749,7 +721,101 @@ namespace BitDiffer.Common.Model
 			tw.WriteLine("</div>");
 		}
 
-		private ChangeType CombineAllChangesThisInstanceGoingForward()
+		public virtual void WriteMarkdownDescription(TextWriter tw, bool appendAllDeclarations, bool appendChildren)
+		{
+			ChangeType nestedChange = CalculateNestedChanges();
+
+			if (!this.ExcludeFromReport)
+			{
+				FilterStatus filterThisInstance;
+
+				if (appendAllDeclarations)
+				{
+					filterThisInstance = GetStrongestFilterStatus();
+
+					if (this.CollapseChildren && filterThisInstance == FilterStatus.ExcludedButIncludeForChildren)
+					{
+						filterThisInstance = FilterStatus.Include;
+					}
+				}
+				else
+				{
+					filterThisInstance = FilterStatus.Include;
+				}
+
+				if ((!appendChildren) || (filterThisInstance >= FilterStatus.DontCare))
+				{
+					WriteMarkdownTitle(tw, appendAllDeclarations, nestedChange);
+
+					if (appendAllDeclarations && NavigateForward != null && this.NavigateForward.NavigateForward == null && Status != ((RootDetail)NavigateForward).Status)
+					{
+						// Just two items being compared, and change was an Add or Remove.  Just print the one that exists.
+						RootDetail soleItem = (Status == Status.Present) ? this : (RootDetail)NavigateForward;
+						soleItem.WriteMarkdownDeclaration(tw, writeDeclaringAssembly: false);
+						soleItem.WriteMarkdownSummaryForChange(tw);
+					}
+					else
+					{
+						// Either one, more than two, or two and both have content.
+						RootDetail eachItem = this;
+						while (eachItem != null)
+						{
+							eachItem.WriteMarkdownDeclaration(tw, writeDeclaringAssembly: true);
+							eachItem.WriteMarkdownSummaryForChange(tw);
+
+							eachItem = appendAllDeclarations ? (RootDetail)eachItem.NavigateForward : null;
+						}
+					}
+				}
+			}
+
+			if (appendChildren && !this.ExcludeChildrenFromReport)
+			{
+				foreach (RootDetail child in FilterChildrenInAll<RootDetail>())
+				{
+					//					if ((child.FullNameRoot) || (child.GetStrongestFilterStatus() != FilterStatus.ExcludedButIncludeForChildren)) // Dont include public stuff inside internal classes for -publiconly 
+					{
+						child.WriteMarkdownDescription(tw, appendAllDeclarations, appendChildren);
+					}
+				}
+			}
+		}
+
+		private void WriteMarkdownTitle(TextWriter tw, bool appendAllDeclarations, ChangeType nestedChange)
+		{
+			RootDetail namedItem;
+			if (appendAllDeclarations)
+			{
+				namedItem = FindItemWithStatusPresent();
+			}
+			else
+			{
+				namedItem = this;
+			}
+
+			string name;
+			if (namedItem == null || namedItem.Status == Status.Missing)
+			{
+				name = Name;
+			}
+			else
+			{
+				name = namedItem.GetTextTitle();
+			}
+
+			string nestedChangeText = ChangeTypeUtil.GetSummaryText(nestedChange);
+
+			tw.Write($"### {name}");
+			if (nestedChangeText != null)
+			{
+				tw.Write($" *{nestedChangeText}*");
+			}
+
+			tw.WriteLine();
+			tw.WriteLine();
+		}
+
+		protected ChangeType CombineAllChangesThisInstanceGoingForward()
 		{
 			ChangeType change = ChangeType.None;
 
@@ -816,7 +882,39 @@ namespace BitDiffer.Common.Model
 			}
 		}
 
-		protected static void AppendClause(StringBuilder sb, string format, params string[] args)
+		protected virtual void WriteMarkdownDeclaration(TextWriter tw, bool writeDeclaringAssembly)
+		{
+			//tw.WriteLine($"<!-- [Root] {GetType().Name} - {ToString()} -->");
+
+			// Write the markdown on a single line.
+			if (writeDeclaringAssembly)
+			{
+				tw.Write($"{DeclaringAssembly.Location}: ");
+			}
+
+			if (this.Status == Status.Present)
+			{
+				tw.WriteLine($"`{GetMarkdownDeclaration()}`");
+			}
+			else
+			{
+				tw.WriteLine(" *Not Defined*");
+			}
+
+			tw.WriteLine();
+		}
+
+
+		private void WriteMarkdownSummaryForChange(TextWriter tw)
+		{
+			if (ShouldWriteMarkdownSummaryForChange)
+			{
+				tw.WriteLine(GetTextChangeDescription());
+				tw.WriteLine();
+			}
+		}
+
+		protected static void AppendClauseText(StringBuilder sb, string format, params string[] args)
 		{
 			if (sb.Length > 0)
 			{
@@ -874,10 +972,10 @@ namespace BitDiffer.Common.Model
 			{
 				foreach (RootDetail child in FilterChildren<RootDetail>())
 				{
-//					if ((child.FullNameRoot) || (child.FilterStatus != FilterStatus.ExcludedButIncludeForChildren)) // Dont include public stuff inside internal classes for -publiconly 
+					//					if ((child.FullNameRoot) || (child.FilterStatus != FilterStatus.ExcludedButIncludeForChildren)) // Dont include public stuff inside internal classes for -publiconly 
 					{
 						child.SerializeWriteXml(writer);
-					} 
+					}
 				}
 			}
 
