@@ -49,6 +49,11 @@ namespace BitDiffer.Common.Model
 			return _assemblyName;
 		}
 
+		public override string GetMarkdownDeclaration()
+		{
+			return _assemblyName;
+		}
+
 		protected override bool FullNameRoot
 		{
 			get { return true; }

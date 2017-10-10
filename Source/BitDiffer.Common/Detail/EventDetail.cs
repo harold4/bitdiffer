@@ -26,10 +26,10 @@ namespace BitDiffer.Common.Model
 
 			AppendAttributesDeclaration(csb);
 
-			csb.Mode = AppendMode.Html;
+			csb.Mode = AppendMode.NonText;
 			csb.AppendVisibility(_visibility);
 			csb.AppendText(" ");
-			csb.Mode = AppendMode.Both;
+			csb.Mode = AppendMode.All;
 
 			csb.AppendKeyword("event ");
 			csb.AppendType(ei.EventHandlerType);
@@ -38,6 +38,7 @@ namespace BitDiffer.Common.Model
 
 			_declaration = csb.ToString();
 			_declarationHtml = csb.ToHtmlString();
+			_declarationMarkdown = csb.ToMarkdownString();
 		}
 
 		protected override string SerializeGetElementName()

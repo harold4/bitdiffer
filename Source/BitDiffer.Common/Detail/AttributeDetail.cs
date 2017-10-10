@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
 using System.ComponentModel;
-
+using System.Runtime.CompilerServices;
 using BitDiffer.Common.Interfaces;
 using BitDiffer.Common.Utility;
 using BitDiffer.Common.Misc;
@@ -38,6 +38,13 @@ namespace BitDiffer.Common.Model
 
 			_declaration = csb.ToString();
 			_declarationHtml = csb.ToHtmlString();
+			_declarationMarkdown = csb.ToMarkdownString();
+
+			if (cad.AttributeType.IsAssignableFrom(typeof(ExtensionAttribute)))
+			{
+				AttributeType = AttributeType.Extension;
+				AppendInCode = false;
+			}
 		}
 
 		protected override bool FullNameRoot
@@ -45,10 +52,15 @@ namespace BitDiffer.Common.Model
 			get { return true; }
 		}
 
+		public AttributeType AttributeType { get; }
+
 		public override string GetTextTitle()
 		{
 			return "Attribute " + _name;
 		}
+
+		public bool AppendInCode { get; } = true;
+
 
 		protected override void ApplyFilterInstance(ComparisonFilter filter)
 		{

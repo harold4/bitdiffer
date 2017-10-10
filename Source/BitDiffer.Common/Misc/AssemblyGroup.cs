@@ -157,6 +157,63 @@ namespace BitDiffer.Common.Misc
 			}
 		}
 
+		public void WriteMarkdownDescription(TextWriter tw)
+		{
+			tw.WriteLine($"# {_name}");
+			tw.WriteLine();
+
+			if (_hasErrors)
+			{
+				tw.WriteLine("```");
+				if (string.IsNullOrEmpty(_errorDetail))
+				{
+					tw.WriteLine("Failed to load one or more versions of this assembly. Examine the log messages pane for detailed error information.");
+				}
+				else
+				{
+					tw.WriteLine("Failed to load one or more versions of this assembly:");
+					tw.WriteLine(_errorDetail);
+				}
+				tw.WriteLine("```");
+			}
+			else
+			{
+				if (_change == ChangeType.None)
+				{
+					if (_assemblies.Count == 1)
+					{
+						tw.WriteLine("Only one version of this assembly was found (nothing to compare to!)");
+						tw.WriteLine();
+					}
+					else
+					{
+						tw.WriteLine("No changes were found across all versions of this assembly.");
+						tw.WriteLine();
+					}
+				}
+				else if (ChangeTypeUtil.HasBreaking(_change))
+				{
+					tw.WriteLine("**Breaking changes were found between versions of this assembly.**");
+					tw.WriteLine();
+				}
+				else if (ChangeTypeUtil.HasNonBreaking(_change))
+				{
+					tw.WriteLine("Non-breaking changes were found between versions of this assembly.");
+					tw.WriteLine();
+				}
+
+				tw.WriteLine("The following files have been compared in this set:");
+				tw.WriteLine();
+
+				foreach (AssemblyDetail detail in _assemblies)
+				{
+					tw.WriteLine($"* {detail.Location}");
+				}
+
+				tw.WriteLine();
+			}
+		}
+
 		public void WriteHtmlReport(TextWriter tw)
 		{
 			tw.Write("<div class='report'>");
@@ -168,5 +225,16 @@ namespace BitDiffer.Common.Misc
 			}
 			tw.Write("</div>");
 		}
+
+		public void WriteMarkdownReport(TextWriter tw)
+		{
+			WriteMarkdownDescription(tw);
+
+			if (_assemblies.Count > 0)
+			{
+				_assemblies[0].WriteMarkdownDescription(tw, true, true);
+			}
+		}
+
 	}
 }

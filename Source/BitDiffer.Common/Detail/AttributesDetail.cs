@@ -17,7 +17,7 @@ namespace BitDiffer.Common.Model
 
 		protected override void GetTextDescriptionBriefMembers(StringBuilder sb)
 		{
-			AppendClause(sb, "Assembly attributes changed");
+			AppendClauseText(sb, "Assembly attributes changed");
 		}
 
 		protected override void GetHtmlChangeDescriptionBriefMembers(StringBuilder sb)

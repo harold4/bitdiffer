@@ -106,10 +106,10 @@ namespace BitDiffer.Common.Model
 
 			AppendAttributesDeclaration(csb);
 
-			csb.Mode = AppendMode.Html;
+			csb.Mode = AppendMode.NonText;
 			csb.AppendVisibility(_visibility);
 			csb.AppendText(" ");
-			csb.Mode = AppendMode.Both;
+			csb.Mode = AppendMode.All;
 
 			if (type.IsAbstract && type.IsSealed)
 			{
@@ -141,6 +141,7 @@ namespace BitDiffer.Common.Model
 
 			_declaration = csb.ToString();
 			_declarationHtml = csb.ToHtmlString();
+			_declarationMarkdown = csb.ToMarkdownString();
 		}
 
 		private static List<MethodBase> FilterMethods(MethodBase[] methods, Type type, bool operatorsOnly)

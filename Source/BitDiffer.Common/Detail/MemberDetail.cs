@@ -4,6 +4,8 @@ using System.Text;
 using System.Reflection;
 using System.ComponentModel;
 using System.Collections;
+using System.IO;
+using System.Linq;
 using System.Xml;
 
 using BitDiffer.Common.Interfaces;
@@ -18,6 +20,7 @@ namespace BitDiffer.Common.Model
 	{
 		protected string _declaration;
 		protected string _declarationHtml;
+		protected string _declarationMarkdown;
 		protected string _category;
 		protected Visibility _visibility = Visibility.Invalid;
 
@@ -219,20 +222,52 @@ namespace BitDiffer.Common.Model
 			return _declarationHtml;
 		}
 
+		public override string GetMarkdownDeclaration()
+		{
+			return _declarationMarkdown;
+		}
+
 		protected virtual void AppendAttributesDeclaration(CodeStringBuilder csb)
 		{
 			AppendMode oldMode = csb.Mode;
-			csb.Mode = AppendMode.Html;
+			csb.Mode = AppendMode.NonText;
 
 			foreach (AttributeDetail ad in FilterChildren<AttributeDetail>())
 			{
-				csb.AppendText("[");
-				csb.AppendRawHtml(ad.GetHtmlDeclaration());
-				csb.AppendText("]");
-				csb.AppendNewline();
+				if (ad.AppendInCode)
+				{
+					csb.AppendText("[");
+					csb.AppendRaw(html: ad.GetHtmlDeclaration(), markdown: ad.GetMarkdownDeclaration());
+					csb.AppendText("]");
+					csb.AppendNewline();
+				}
 			}
 
 			csb.Mode = oldMode;
+		}
+
+		protected override void WriteMarkdownDeclaration(TextWriter tw, bool writeDeclaringAssembly)
+		{
+			// Write the markdown in multiple lines, with the declaration inside a code block.
+			// ASSUMPTION: code is always C#
+			if (writeDeclaringAssembly)
+			{
+				tw.WriteLine(DeclaringAssembly.Location);
+				tw.WriteLine();
+			}
+
+			if (this.Status == Status.Present)
+			{
+				tw.WriteLine("```csharp");
+				tw.WriteLine(GetMarkdownDeclaration());
+				tw.WriteLine("```");
+			}
+			else
+			{
+				tw.WriteLine("*Not Defined*");
+			}
+
+			tw.WriteLine();
 		}
 	}
 }

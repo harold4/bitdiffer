@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Xml;
 
 using BitDiffer.Common.Interfaces;
@@ -57,10 +59,10 @@ namespace BitDiffer.Common.Model
 				bi = ((MethodInfo)mi).GetBaseDefinition();
 			}
 
-			csb.Mode = AppendMode.Html;
+			csb.Mode = AppendMode.NonText;
 			csb.AppendVisibility(_visibility);
 			csb.AppendText(" ");
-			csb.Mode = AppendMode.Both;
+			csb.Mode = AppendMode.All;
 
 			if (mi.IsAbstract)
 			{
@@ -94,6 +96,14 @@ namespace BitDiffer.Common.Model
 			csb.AppendText(_name);
 			csb.AppendText("(");
 
+			// Add "this" keyword for extension methods.
+			if (false || FilterChildren<AttributeDetail>().Any(a => a.AttributeType == AttributeType.Extension))
+			{
+				csb.AppendKeyword("this");
+				csb.AppendText(" ");
+			}
+
+
 			CodeStringBuilder csbParameters = new CodeStringBuilder(AppendMode.Text);
 
 			foreach (ParameterInfo pi in mi.GetParameters())
@@ -122,6 +132,7 @@ namespace BitDiffer.Common.Model
 
 			_declaration = csb.ToString();
 			_declarationHtml = csb.ToHtmlString();
+			_declarationMarkdown = csb.ToMarkdownString();
 			_parameterTypesList = csbParameters.ToString();
 		}
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Security.Cryptography;
 using System.Xml;
@@ -46,6 +47,11 @@ namespace BitDiffer.Common.Model
 			return _value;
 		}
 
+		public override string GetMarkdownDeclaration()
+		{
+			return _value;
+		}
+
 		protected override ChangeType CompareInstance(ICanCompare previous, bool suppressBreakingChanges)
 		{
 			ChangeType change = base.CompareInstance(previous, suppressBreakingChanges);
@@ -81,6 +87,16 @@ namespace BitDiffer.Common.Model
 		protected override int RelativeSortOrder
 		{
 			get { return -10; }
+		}
+
+
+		protected override bool ShouldWriteMarkdownSummaryForChange
+		{
+			get
+			{
+				// Trait: it's obviously a value change, don't report a non-breaking change.
+				return Change != ChangeType.ValueChangedNonBreaking && base.ShouldWriteMarkdownSummaryForChange;
+			}
 		}
 	}
 }

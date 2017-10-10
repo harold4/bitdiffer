@@ -11,9 +11,10 @@ namespace BitDiffer.Common.Utility
 {
 	public class CodeStringBuilder
 	{
-		private AppendMode _mode = AppendMode.Both;
-		private StringBuilder _sbText = new StringBuilder(25);
-		private StringBuilder _sbHtml = new StringBuilder(75);
+		private AppendMode _mode = AppendMode.All;
+		private readonly StringBuilder _sbText = new StringBuilder(25);
+		private readonly StringBuilder _sbHtml = new StringBuilder(75);
+		private readonly StringBuilder _sbMarkdown = new StringBuilder(50); // TODO choose initial size more rigorously -- 50 is a guess.
 
 		public CodeStringBuilder()
 		{
@@ -70,7 +71,7 @@ namespace BitDiffer.Common.Utility
 			if (includeNamespace)
 			{
 				AppendMode restore = _mode;
-				_mode &= ~AppendMode.Html;
+				_mode &= ~AppendMode.NonText;
 				AppendText(type.Namespace);
 				AppendText(".");
 				_mode = restore;
@@ -109,6 +110,12 @@ namespace BitDiffer.Common.Utility
 					_sbHtml.Append("</span>");
 				}
 			}
+
+			if ((_mode & AppendMode.Markdown) != 0)
+			{
+				_sbMarkdown.Append(word);
+			}
+
 		}
 
 		public void AppendNewline()
@@ -122,6 +129,11 @@ namespace BitDiffer.Common.Utility
 			{
 				_sbHtml.Append("<br>");
 			}
+
+			if ((_mode & AppendMode.Markdown) != 0)
+			{
+				_sbMarkdown.Append(Environment.NewLine);
+			}
 		}
 
 		public void AppendIndent()
@@ -134,6 +146,11 @@ namespace BitDiffer.Common.Utility
 			if ((_mode & AppendMode.Html) != 0)
 			{
 				_sbHtml.Append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+			}
+
+			if ((_mode & AppendMode.Markdown) != 0)
+			{
+				_sbMarkdown.Append("     ");
 			}
 		}
 
@@ -170,9 +187,22 @@ namespace BitDiffer.Common.Utility
 			AppendType(pi.ParameterType);
 		}
 
-		public void AppendRawHtml(string html)
+		public void AppendRaw(string text = null, string html = null, string markdown = null)
 		{
-			_sbHtml.Append(html);
+			if (text != null)
+			{ 
+				_sbText.Append(text);
+			}
+
+			if (html != null)
+			{
+				_sbHtml.Append(html);
+			}
+
+			if (markdown != null)
+			{
+				_sbMarkdown.Append(markdown);
+			}
 		}
 
 		public void AppendGenericRestrictions(Type type)
@@ -310,6 +340,11 @@ namespace BitDiffer.Common.Utility
 			if ((_mode & AppendMode.Html) != 0)
 			{
 				_sbHtml.Remove(_sbHtml.Length - count, count);
+			}
+
+			if ((_mode & AppendMode.Markdown) != 0)
+			{
+				_sbMarkdown.Remove(_sbMarkdown.Length - count, count);
 			}
 		}
 
@@ -475,6 +510,11 @@ namespace BitDiffer.Common.Utility
 		public virtual string ToHtmlString()
 		{
 			return _sbHtml.ToString();
+		}
+
+		public virtual string ToMarkdownString()
+		{
+			return _sbMarkdown.ToString();
 		}
 	}
 }
