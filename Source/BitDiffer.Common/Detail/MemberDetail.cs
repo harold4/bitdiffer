@@ -248,6 +248,8 @@ namespace BitDiffer.Common.Model
 
 		protected override void WriteMarkdownDeclaration(TextWriter tw, bool writeDeclaringAssembly)
 		{
+			//tw.WriteLine($"<!-- [Member] {GetType().Name} - {ToString()} -->");
+
 			// Write the markdown in multiple lines, with the declaration inside a code block.
 			// ASSUMPTION: code is always C#
 			if (writeDeclaringAssembly)
