@@ -97,7 +97,7 @@ namespace BitDiffer.Common.Model
 			csb.AppendText("(");
 
 			// Add "this" keyword for extension methods.
-			if (false || FilterChildren<AttributeDetail>().Any(a => a.AttributeType == AttributeType.Extension))
+			if (mi.CustomAttributes.Any(x => typeof(ExtensionAttribute).IsAssignableFrom(x.AttributeType)))
 			{
 				csb.AppendKeyword("this");
 				csb.AppendText(" ");
