@@ -37,7 +37,7 @@ namespace BitDiffer.Common.Model
 			get { return false; }
 		}
 
-		public virtual bool ExcludeChildrenFromReport
+		public override bool ExcludeChildrenFromReport
 		{
 			get { return this.CollapseChildren; }// || ChangeTypeUtil.IsNonBreakingAddRemove(CombineAllChangesThisInstanceGoingForward()); }
 		}
