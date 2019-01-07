@@ -32,6 +32,6 @@ Source/BitDiffer.Tests.bin/
 packages
 Build/scripts/.fake
 Build/output
-
+.vs
 paket-files/
 .paket/Paket.Restore.targets
