@@ -67,23 +67,45 @@ namespace BitDiffer.Common.Utility
 				return;
 			}
 
+			string typeName = type.Name;
+			// UI only: cut out "Attribute" part
+			if (typeof(Attribute).IsAssignableFrom(type))
+			{
+				typeName = typeName.Substring(0, typeName.Length - 9); // 9 == length of "Attribute"
+			}
+
 			// Dont show the namespaces on user types in the UI - but keep them in text, for comparison and reports
 			if (includeNamespace)
 			{
 				AppendMode restore = _mode;
+
 				_mode &= ~AppendMode.NonText;
 				AppendText(type.Namespace);
 				AppendText(".");
-				_mode = restore;
-			}
+				AppendTypeName(type, type.Name);
 
-			if (type.IsGenericType)
-			{
-				AppendGeneric(type.Name, type.GetGenericArguments(), "usertype");
+				// Now non-text
+				_mode |= AppendMode.NonText;
+				_mode &= ~AppendMode.Text;
+				AppendTypeName(type, typeName);
+
+				_mode = restore;
 			}
 			else
 			{
-				AppendText(type.Name, "usertype");
+				AppendTypeName(type, typeName);
+			}
+		}
+
+		private void AppendTypeName(Type type, string typeName)
+		{
+			if (type.IsGenericType)
+			{
+				AppendGeneric(typeName, type.GetGenericArguments(), "usertype");
+			}
+			else
+			{
+				AppendText(typeName, "usertype");
 			}
 		}
 
