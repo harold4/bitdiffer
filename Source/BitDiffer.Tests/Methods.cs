@@ -127,6 +127,12 @@ namespace BitDiffer.Tests
 			AssertChange("BasicClass", "InternalMethodAdded", ChangeType.Added);
 		}
 
+		[TestMethod]
+		public void Method_Change_ObsoleteAttributeAdded()
+		{
+			AssertChange("BasicClass", "MethodBecomesObsolete", ChangeType.AttributesChanged);
+		}
+
 		private void AssertChange(string from, string name, ChangeType change)
 		{
 			AssertChange(from, name, change, DiffConfig.Default);

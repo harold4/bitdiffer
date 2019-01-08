@@ -194,6 +194,22 @@ namespace BitDiffer.Tests.Subject
 			set { ; }
 		}
 
+		[Obsolete("MethodBecomesObsolete")]
+		public void MethodBecomesObsolete()
+		{
+		}
+
+		[Obsolete("PropertyBecomesObsolete")]
+		public string PropertyBecomesObsolete
+		{
+			get { return "x"; }
+			set { }
+		}
+
+		public void PublicMethodRemoved()
+		{
+		}
+
 		internal void InternalMethodAdded()
 		{
 		}

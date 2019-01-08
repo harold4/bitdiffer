@@ -188,6 +188,16 @@ namespace BitDiffer.Tests.Subject
 			set { ; }
 		}
 
+		public void MethodBecomesObsolete()
+		{
+		}
+
+		public string PropertyBecomesObsolete
+		{
+			get { return "x"; }
+			set { }
+		}
+
 		public void PublicMethodRemoved()
 		{
 		}
