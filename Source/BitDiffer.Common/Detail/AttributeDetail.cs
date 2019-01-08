@@ -53,6 +53,10 @@ namespace BitDiffer.Common.Model
 				AttributeType = AttributeType.Extension;
 				AppendInCode = false;
 			}
+			else if (cad.AttributeType.IsAssignableFrom(typeof(ObsoleteAttribute)))
+			{
+				AttributeType = AttributeType.Obsolete;
+			}
 		}
 
 		protected override bool FullNameRoot

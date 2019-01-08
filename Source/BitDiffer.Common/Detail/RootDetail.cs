@@ -295,6 +295,19 @@ namespace BitDiffer.Common.Model
 					}
 				}
 
+				if ((change & ChangeType.ObsoleteChangedBreaking) != 0)
+				{
+					_changeThisInstance |= ChangeType.ObsoleteChangedBreaking;
+				}
+
+				if ((change & ChangeType.ObsoleteChangedNonBreaking) != 0)
+				{
+					if ((_changeThisInstance & ChangeType.ObsoleteChangedBreaking) == 0)
+					{
+						_changeThisInstance |= ChangeType.ObsoleteChangedNonBreaking;
+					}
+				}
+
 				if ((change & ChangeType.ImplementationChanged) != 0)
 				{
 					_changeThisInstance |= ChangeType.ImplementationChanged;
@@ -451,6 +464,11 @@ namespace BitDiffer.Common.Model
 				sb.Append("Visibility Changed, ");
 			}
 
+			if (((this.Change & ChangeType.ObsoleteChangedBreaking) != 0) || ((this.Change & ChangeType.ObsoleteChangedNonBreaking) != 0))
+			{
+				sb.Append("Obsolete Changed, ");
+			}
+
 			if (((this.Change & ChangeType.DeclarationChangedBreaking) != 0) || ((this.Change & ChangeType.DeclarationChangedNonBreaking) != 0))
 			{
 				sb.Append("Declaration Changed, ");
@@ -503,6 +521,11 @@ namespace BitDiffer.Common.Model
 			if (((this.Change & ChangeType.VisibilityChangedBreaking) != 0) || ((this.Change & ChangeType.VisibilityChangedNonBreaking) != 0))
 			{
 				AppendClauseText(sb, VisibilityUtil.GetVisibilityChangeText(previous, this));
+			}
+
+			if (((this.Change & ChangeType.ObsoleteChangedBreaking) != 0) || ((this.Change & ChangeType.ObsoleteChangedNonBreaking) != 0))
+			{
+				AppendClauseText(sb, ObsoleteUtil.GetObsoleteChangeText(previous, this));
 			}
 
 			if (((this.Change & ChangeType.MembersChangedBreaking) != 0) || ((this.Change & ChangeType.MembersChangedNonBreaking) != 0))
@@ -584,6 +607,11 @@ namespace BitDiffer.Common.Model
 			if (((this.Change & ChangeType.VisibilityChangedBreaking) != 0) || ((this.Change & ChangeType.VisibilityChangedNonBreaking) != 0))
 			{
 				AppendClauseHtml(sb, ((this.Change & ChangeType.VisibilityChangedBreaking) != 0), VisibilityUtil.GetVisibilityChangeText(previous, this));
+			}
+
+			if (((this.Change & ChangeType.ObsoleteChangedBreaking) != 0) || ((this.Change & ChangeType.ObsoleteChangedNonBreaking) != 0))
+			{
+				AppendClauseHtml(sb, ((this.Change & ChangeType.ObsoleteChangedBreaking) != 0), ObsoleteUtil.GetObsoleteChangeText(previous, this));
 			}
 
 			if (((this.Change & ChangeType.MembersChangedBreaking) != 0) || ((this.Change & ChangeType.MembersChangedNonBreaking) != 0))
@@ -1108,6 +1136,15 @@ namespace BitDiffer.Common.Model
 				sb.Append("Visibility, ");
 			}
 
+			if ((this.Change & ChangeType.ObsoleteChangedBreaking) != 0)
+			{
+				sb.Append("Obsolete, ");
+			}
+			else if ((this.Change & ChangeType.ObsoleteChangedNonBreaking) != 0)
+			{
+				sb.Append("Obsolete, ");
+			}
+
 			if ((this.Change & ChangeType.DeclarationChangedBreaking) != 0)
 			{
 				sb.Append("Declaration, ");
@@ -1149,6 +1186,11 @@ namespace BitDiffer.Common.Model
 			{
 				IHaveVisibility hv = (IHaveVisibility)this;
 				return hv.Visibility.ToString().ToLower();
+			}
+			else if ((this is IHaveObsoleteAttribute) && (((changeType & ChangeType.ObsoleteChangedBreaking) != 0) || ((changeType & ChangeType.ObsoleteChangedNonBreaking) != 0)))
+			{
+				IHaveObsoleteAttribute hv = (IHaveObsoleteAttribute) this;
+				return ObsoleteUtil.GetObsoleteString(hv.ObsoleteAttribute);
 			}
 			else
 			{

@@ -4,6 +4,7 @@ using System.Text;
 using System.Reflection;
 using System.ComponentModel;
 using System.Collections;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml;
@@ -16,13 +17,14 @@ using BitDiffer.Common.Configuration;
 namespace BitDiffer.Common.Model
 {
 	[Serializable]
-	public class MemberDetail : RootDetail, IHaveVisibility
+	public class MemberDetail : RootDetail, IHaveVisibility, IHaveObsoleteAttribute
 	{
 		protected string _declaration;
 		protected string _declarationHtml;
 		protected string _declarationMarkdown;
 		protected string _category;
 		protected Visibility _visibility = Visibility.Invalid;
+		protected AttributeDetail _obsoleteAttribute;
 
 		public MemberDetail()
 		{
@@ -38,7 +40,23 @@ namespace BitDiffer.Common.Model
 
                 foreach (CustomAttributeData cad in cads)
                 {
-                    _children.Add(new AttributeDetail(this, cad));
+	                var attribute = new AttributeDetail(this, cad);
+	                switch (attribute.AttributeType)
+	                {
+						case AttributeType.Obsolete:
+							// We found an ObsoleteAttribute; store a reference to it on the member itself.
+							// There *should* be only one ObsoleteAttribute on a member, but IL does not prohibit it (C# does)
+							// and so code generators like Fody.Obsolete can accidentally add a second one.
+							// In this case, take the first as the "winner", as Microsoft's compiler behaves this way.
+							if (_obsoleteAttribute == null)
+							{
+								_obsoleteAttribute = attribute;
+							}
+
+							break;
+	                }
+
+	                _children.Add(attribute);
                 }
             }
             catch(TypeLoadException ex)
@@ -83,6 +101,12 @@ namespace BitDiffer.Common.Model
 			set { _visibility = value; }
 		}
 
+		public AttributeDetail ObsoleteAttribute
+		{
+			get { return _obsoleteAttribute; }
+			set { _obsoleteAttribute = value; }
+		}
+
 		protected override void SerializeWriteRawContent(XmlWriter writer)
 		{
 			base.SerializeWriteRawContent(writer);
@@ -115,6 +139,7 @@ namespace BitDiffer.Common.Model
 			ChangeType change = base.CompareInstance(previous, suppressBreakingChanges);
 
 			change |= CompareVisibility(previous, suppressBreakingChanges);
+			change |= CompareObsoleteStatus(previous, suppressBreakingChanges);
 			change |= CompareDeclaration(previous, suppressBreakingChanges);
 
 			return change;
@@ -144,6 +169,13 @@ namespace BitDiffer.Common.Model
 			MemberDetail other = (MemberDetail)previous;
 
 			return VisibilityUtil.GetVisibilityChange(other._visibility, _visibility, suppressBreakingChanges);
+		}
+
+		protected virtual ChangeType CompareObsoleteStatus(ICanCompare previous, bool suppressBreakingChanges)
+		{
+			MemberDetail other = (MemberDetail)previous;
+
+			return ObsoleteUtil.GetObsoleteChange(other._obsoleteAttribute, _obsoleteAttribute, suppressBreakingChanges);
 		}
 
 		protected override void ApplyFilterInstance(ComparisonFilter filter)

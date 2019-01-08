@@ -98,6 +98,7 @@
     <Compile Include="Exceptions\WeakerMatchException.cs" />
     <Compile Include="Interfaces\IHandleProgress.cs" />
     <Compile Include="Interfaces\ICanNavigate.cs" />
+    <Compile Include="Interfaces\IHaveObsoleteAttribute.cs" />
     <Compile Include="Misc\AlignMatchStatus.cs" />
     <Compile Include="Misc\AssemblyComparison.cs" />
     <Compile Include="Misc\AssemblyDirectoryEntry.cs" />
@@ -126,6 +127,7 @@
     <Compile Include="Utility\GenericUtility.cs" />
     <Compile Include="Utility\ListOperations.cs" />
     <Compile Include="Utility\Log.cs" />
+    <Compile Include="Utility\ObsoleteUtil.cs" />
     <Compile Include="Utility\Stopwatch.cs" />
     <Compile Include="Utility\ThreadPoolWait.cs" />
     <Compile Include="Utility\VisibilityUtil.cs" />
