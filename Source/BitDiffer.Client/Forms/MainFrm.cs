@@ -733,7 +733,7 @@ namespace BitDiffer.Client.Forms
 			}
 
 			SaveFileDialog sfd = new SaveFileDialog();
-			sfd.Filter = "HTML Report (*.html)|*.html|XML Report (*.xml)|*.xml";
+			sfd.Filter = "HTML Report (*.html)|*.html|Markdown Report (*.md)|*.md|XML Report (*.xml)|*.xml";
 			sfd.CheckPathExists = true;
 			sfd.AddExtension = true;
 
