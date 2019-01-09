@@ -601,6 +601,72 @@ namespace BitDiffer.Common.Model
 			return sb.ToString();
 		}
 
+		public virtual string GetMarkdownChangeDescription()
+		{
+			if (this.Change == ChangeType.None)
+			{
+				// Show nothing.
+				return string.Empty;
+			}
+
+			StringBuilder sb = new StringBuilder();
+			RootDetail previous = (RootDetail)_navigateBackward;
+
+			sb.AppendLine("Changes found:");
+			sb.AppendLine();
+
+			if ((this.Change & ChangeType.Added) != 0)
+			{
+				AppendClauseMarkdown(sb, "Added");
+			}
+
+			if (((this.Change & ChangeType.RemovedBreaking) != 0) || ((this.Change & ChangeType.RemovedNonBreaking) != 0))
+			{
+				AppendClauseMarkdown(sb, "Removed");
+			}
+
+			if ((this.Change & ChangeType.ContentChanged) != 0)
+			{
+				AppendClauseMarkdown(sb, "Content changed");
+			}
+
+			if ((this.Change & ChangeType.ValueChangedBreaking) != 0)
+			{
+				AppendClauseMarkdown(sb, "Value has a breaking change");
+			}
+			else if ((this.Change & ChangeType.ValueChangedNonBreaking) != 0)
+			{
+				AppendClauseMarkdown(sb, "Value has a non-breaking change");
+			}
+
+			if (((this.Change & ChangeType.DeclarationChangedBreaking) != 0) || ((this.Change & ChangeType.DeclarationChangedNonBreaking) != 0))
+			{
+				AppendClauseMarkdown(sb, "Declaration changed");
+			}
+
+			if (((this.Change & ChangeType.VisibilityChangedBreaking) != 0) || ((this.Change & ChangeType.VisibilityChangedNonBreaking) != 0))
+			{
+				AppendClauseMarkdown(sb, VisibilityUtil.GetVisibilityChangeText(previous, this));
+			}
+
+			if (((this.Change & ChangeType.MembersChangedBreaking) != 0) || ((this.Change & ChangeType.MembersChangedNonBreaking) != 0))
+			{
+				GetMarkdownDescriptionBriefMembers(sb);
+			}
+
+			if ((this.Change & ChangeType.ImplementationChanged) != 0)
+			{
+				AppendClauseMarkdown(sb, "Implementation changed");
+			}
+
+			if ((this.Change & ChangeType.AttributesChanged) != 0)
+			{
+				AppendClauseMarkdown(sb, "Attributes changed");
+			}
+
+			return sb.ToString();
+		}
+
 		protected virtual void GetTextDescriptionBriefMembers(StringBuilder sb)
 		{
 			AppendClauseText(sb, "Members changed");
@@ -609,6 +675,11 @@ namespace BitDiffer.Common.Model
 		protected virtual void GetHtmlChangeDescriptionBriefMembers(StringBuilder sb)
 		{
 			AppendClauseHtml(sb, ((this.Change & ChangeType.MembersChangedBreaking) != 0), "Members changed", _name);
+		}
+
+		protected virtual void GetMarkdownDescriptionBriefMembers(StringBuilder sb)
+		{
+			AppendClauseMarkdown(sb, "Members changed");
 		}
 
 		public virtual string GetTextTitle()
@@ -919,7 +990,7 @@ namespace BitDiffer.Common.Model
 		{
 			if (ShouldWriteMarkdownSummaryForChange)
 			{
-				tw.WriteLine(GetTextChangeDescription());
+				tw.WriteLine(GetMarkdownChangeDescription());
 				tw.WriteLine();
 			}
 		}
@@ -954,6 +1025,14 @@ namespace BitDiffer.Common.Model
 				sb.Append(" (Breaking)</span>");
 			}
 		}
+
+		protected static void AppendClauseMarkdown(StringBuilder sb, string format, params string[] args)
+		{
+			sb.Append("* ");
+			sb.AppendFormat(format, args);
+			sb.AppendLine();
+		}
+
 
 		internal virtual void SerializeWriteRawXml(XmlWriter writer)
 		{
