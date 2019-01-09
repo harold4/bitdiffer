@@ -53,8 +53,30 @@ namespace BitDiffer.Common.Utility
 
 		public void AppendType(Type type, bool includeNamespace)
 		{
-			string typeAsKeyword = GetTypeNameAsKeyword(type);
+			if (type.IsArray)
+			{
+				// simplify arrays
+				Type elementType = type.GetElementType();
+				if (elementType != null)
+				{
+					OpenText("usertype");
+					AppendType(elementType, includeNamespace);
+					AppendText("[]");
+					CloseText("usertype");
+					return;
+				}
+			}
 
+			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+			{
+				OpenText("usertype");
+				AppendType(Nullable.GetUnderlyingType(type), includeNamespace);
+				AppendText("?");
+				CloseText("usertype");
+				return;
+			}
+
+			string typeAsKeyword = GetTypeNameAsKeyword(type);
 			if (typeAsKeyword != null)
 			{
 				AppendKeyword(typeAsKeyword);
@@ -109,13 +131,8 @@ namespace BitDiffer.Common.Utility
 			}
 		}
 
-		public void AppendText(string word, string css)
+		public void OpenText(string css)
 		{
-			if ((_mode & AppendMode.Text) != 0)
-			{
-				_sbText.Append(word);
-			}
-
 			if ((_mode & AppendMode.Html) != 0)
 			{
 				if (css != null)
@@ -124,19 +141,40 @@ namespace BitDiffer.Common.Utility
 					_sbHtml.Append(css);
 					_sbHtml.Append("'>");
 				}
+			}
+		}
 
-				_sbHtml.Append(HtmlEncode(word));
-
+		public void CloseText(string css)
+		{
+			if ((_mode & AppendMode.Html) != 0)
+			{
 				if (css != null)
 				{
 					_sbHtml.Append("</span>");
 				}
+			}
+		}
+
+		public void AppendText(string word, string css)
+		{
+			OpenText(css);
+
+			if ((_mode & AppendMode.Text) != 0)
+			{
+				_sbText.Append(word);
+			}
+
+			if ((_mode & AppendMode.Html) != 0)
+			{
+				_sbHtml.Append(HtmlEncode(word));
 			}
 
 			if ((_mode & AppendMode.Markdown) != 0)
 			{
 				_sbMarkdown.Append(word);
 			}
+
+			CloseText(css);
 
 		}
 
@@ -212,7 +250,7 @@ namespace BitDiffer.Common.Utility
 		public void AppendRaw(string text = null, string html = null, string markdown = null)
 		{
 			if (text != null)
-			{ 
+			{
 				_sbText.Append(text);
 			}
 
@@ -381,105 +419,74 @@ namespace BitDiffer.Common.Utility
 
 		private string GetTypeNameAsKeyword(Type type)
 		{
-			if (type.IsArray)
+			if (type == typeof(void))
 			{
-				// simplify arrays
-				Type elementType = type.GetElementType();
-				if (elementType != null)
-				{
-					string strType = GetTypeNameAsKeyword(elementType);
-					if (strType != null)
-					{
-						return strType + "[]";
-					}
-				}
-
-				// Must be System.Array or similar.
-				return null;
+				return "void";
 			}
 
-			if (type.IsGenericType)
+			if (type == typeof(string))
 			{
-				if (type.GetGenericTypeDefinition() == typeof(Nullable<>))
-				{
-					string baseType = GetTypeNameAsKeyword(Nullable.GetUnderlyingType(type));
-
-					if (baseType != null)
-					{
-						return baseType + "?";
-					}
-				}
+				return "string";
 			}
-			else
+			else if (type == typeof(byte))
 			{
-				if (type == typeof(void))
-				{
-					return "void";
-				}
-				if (type == typeof(string))
-				{
-					return "string";
-				}
-				else if (type == typeof(byte))
-				{
-					return "byte";
-				}
-				else if (type == typeof(short))
-				{
-					return "short";
-				}
-				else if (type == typeof(int))
-				{
-					return "int";
-				}
-				else if (type == typeof(long))
-				{
-					return "long";
-				}
-				else if (type == typeof(char))
-				{
-					return "char";
-				}
-				else if (type == typeof(bool))
-				{
-					return "bool";
-				}
-				else if (type == typeof(DateTime))
-				{
-					return "DateTime";
-				}
-				else if (type == typeof(decimal))
-				{
-					return "decimal";
-				}
-				else if (type == typeof(double))
-				{
-					return "double";
-				}
-				else if (type == typeof(float))
-				{
-					return "float";
-				}
-				else if (type == typeof(sbyte))
-				{
-					return "sbyte";
-				}
-				else if (type == typeof(ushort))
-				{
-					return "ushort";
-				}
-				else if (type == typeof(uint))
-				{
-					return "uint";
-				}
-				else if (type == typeof(ulong))
-				{
-					return "ulong";
-				}
-				else if (type == typeof(object))
-				{
-					return "object";
-				}
+				return "byte";
+			}
+			else if (type == typeof(short))
+			{
+				return "short";
+			}
+			else if (type == typeof(int))
+			{
+				return "int";
+			}
+			else if (type == typeof(long))
+			{
+				return "long";
+			}
+			else if (type == typeof(char))
+			{
+				return "char";
+			}
+			else if (type == typeof(bool))
+			{
+				return "bool";
+			}
+			else if (type == typeof(DateTime))
+			{
+				return "DateTime";
+			}
+			else if (type == typeof(decimal))
+			{
+				return "decimal";
+			}
+			else if (type == typeof(double))
+			{
+				return "double";
+			}
+			else if (type == typeof(float))
+			{
+				return "float";
+			}
+			else if (type == typeof(sbyte))
+			{
+				return "sbyte";
+			}
+			else if (type == typeof(ushort))
+			{
+				return "ushort";
+			}
+			else if (type == typeof(uint))
+			{
+				return "uint";
+			}
+			else if (type == typeof(ulong))
+			{
+				return "ulong";
+			}
+			else if (type == typeof(object))
+			{
+				return "object";
 			}
 
 			return null;
