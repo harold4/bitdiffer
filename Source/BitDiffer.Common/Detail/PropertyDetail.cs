@@ -78,10 +78,7 @@ namespace BitDiffer.Common.Model
 
 			csb.Mode = AppendMode.NonText;
 
-			csb.AppendNewline();
-			csb.AppendText("{");
-			csb.AppendNewline();
-			csb.AppendIndent();
+			csb.AppendText(" { ");
 
 			foreach (MethodDetail mi in FilterChildren<MethodDetail>())
 			{
@@ -91,11 +88,10 @@ namespace BitDiffer.Common.Model
 					csb.AppendText(" ");
 				}
 
-				csb.AppendText(mi.Name);
+				csb.AppendKeyword(mi.Name);
 				csb.AppendText("; ");
 			}
 
-			csb.AppendNewline();
 			csb.AppendText("}");
 
 			_declaration = csb.ToString();
