@@ -177,11 +177,18 @@ namespace BitDiffer.Common.Utility
 
 		public static string GetVisibilityChangeText(RootDetail from, RootDetail to)
 		{
-			return GetVisibilityChangeText(((IHaveVisibility)from).Visibility, ((IHaveVisibility)to).Visibility);
+		return GetVisibilityChangeText((IHaveVisibility)from, (IHaveVisibility)to);
 		}
 
 		public static string GetVisibilityChangeText(IHaveVisibility from, IHaveVisibility to)
 		{
+			// When collapsing properties the visibility of the property itself (as opposed to the child accessors) may actually
+			// be the same....
+			if (from.Visibility == to.Visibility && from is PropertyDetail && to is PropertyDetail)
+			{
+				return "Accessor visibility changed";
+			}
+
 			return GetVisibilityChangeText(from.Visibility, to.Visibility);
 		}
 
