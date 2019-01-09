@@ -78,8 +78,8 @@ namespace BitDiffer.Common.Utility
 			tw.WriteLine(".usertype { color:#2B91AF; }");
 			tw.WriteLine(".string { color:#A31515; }");
 			tw.WriteLine(".visibility { color:blue; }");
+			tw.WriteLine(".change-summary { grid-column: span 2 }");
 			tw.WriteLine(".change-summary::before { content: 'Changes Found : '; }");
-			//tw.WriteLine(".change-summary { display: none; }");
 			tw.WriteLine("</style>");
 		}
 
