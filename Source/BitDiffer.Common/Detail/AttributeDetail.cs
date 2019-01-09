@@ -29,11 +29,19 @@ namespace BitDiffer.Common.Model
 
 			csb.AppendType(cad.Constructor.DeclaringType);
 
-			if (cad.ConstructorArguments.Count > 0)
+			using (var e = cad.ConstructorArguments.GetEnumerator())
 			{
-				csb.AppendText("(");
-				csb.AppendQuotedValue(cad.ConstructorArguments[0].Value);
-				csb.AppendText(")");
+				if (e.MoveNext())
+				{
+					csb.AppendText("(");
+					csb.AppendQuotedValue(e.Current.Value);
+					while (e.MoveNext())
+					{
+						csb.AppendText(", ");
+						csb.AppendQuotedValue(e.Current.Value);
+					}
+					csb.AppendText(")");
+				}
 			}
 
 			_declaration = csb.ToString();
