@@ -166,6 +166,8 @@ namespace BitDiffer.Common.Model
 			return change;
 		}
 
+		public override bool CollapseChildren => true;
+
 		protected override string SerializeGetElementName()
 		{
 			return "Method";
