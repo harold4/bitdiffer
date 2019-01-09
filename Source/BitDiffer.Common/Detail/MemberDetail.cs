@@ -255,7 +255,7 @@ namespace BitDiffer.Common.Model
 			// ASSUMPTION: code is always C#
 			if (writeDeclaringAssembly)
 			{
-				tw.WriteLine(DeclaringAssembly.Location);
+				tw.WriteLine(MarkdownUtility.ToInlineCode(DeclaringAssembly.Location));
 				tw.WriteLine();
 			}
 

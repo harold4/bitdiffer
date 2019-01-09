@@ -968,9 +968,12 @@ namespace BitDiffer.Common.Model
 			//tw.WriteLine($"<!-- [Root] {GetType().Name} - {ToString()} -->");
 
 			// Write the markdown on a single line.
+
 			if (writeDeclaringAssembly)
 			{
-				tw.Write($"{DeclaringAssembly.Location}: ");
+				// Escape the declaring assembly location with backticks because Markdown will interpret assembly names that end in a TLD as a URL.
+				// Even some of Microsoft's own assemblies (System.Net, System.Web) are affected by this.
+				tw.Write($"{MarkdownUtility.ToInlineCode(DeclaringAssembly.Location)}: ");
 			}
 
 			if (this.Status == Status.Present)
@@ -984,7 +987,6 @@ namespace BitDiffer.Common.Model
 
 			tw.WriteLine();
 		}
-
 
 		private void WriteMarkdownSummaryForChange(TextWriter tw)
 		{
@@ -1032,7 +1034,6 @@ namespace BitDiffer.Common.Model
 			sb.AppendFormat(format, args);
 			sb.AppendLine();
 		}
-
 
 		internal virtual void SerializeWriteRawXml(XmlWriter writer)
 		{
