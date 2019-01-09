@@ -91,12 +91,12 @@ namespace BitDiffer.Common.Model
 			return "Reference";
 		}
 
-		protected override bool ShouldWriteMarkdownSummaryForChange
+		protected override bool ShouldWriteHtmlSummaryForChange
 		{
 			get
 			{
 				// Reference: it's obviously a value change, don't report a non-breaking change.
-				return Change != ChangeType.ValueChangedNonBreaking && base.ShouldWriteMarkdownSummaryForChange;
+				return Change != ChangeType.ValueChangedNonBreaking && base.ShouldWriteHtmlSummaryForChange;
 			}
 		}
 	}

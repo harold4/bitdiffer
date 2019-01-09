@@ -124,12 +124,11 @@ namespace BitDiffer.Common.Model
 			get { return true; }
 		}
 
-
-		protected virtual bool ShouldWriteMarkdownSummaryForChange
+		protected virtual bool ShouldWriteHtmlSummaryForChange
 		{
 			get
 			{
-				// Don't write simple changes in Markdown.  The header will have this information.
+				// Don't write simple changes in HTML.  The header will have this information.
 				switch (this.Change)
 				{
 					case ChangeType.None:
@@ -142,6 +141,8 @@ namespace BitDiffer.Common.Model
 				}
 			}
 		}
+
+		protected virtual bool ShouldWriteMarkdownSummaryForChange => ShouldWriteHtmlSummaryForChange;
 
 		protected ChangeType PerformCompareInternal(ICanCompare from, bool suppressBreakingChanges)
 		{
@@ -836,6 +837,9 @@ namespace BitDiffer.Common.Model
 
 			string nestedChangeText = ChangeTypeUtil.GetSummaryText(nestedChange);
 
+			tw.WriteLine("----");
+			tw.WriteLine();
+
 			tw.Write($"### {name}");
 			if (nestedChangeText != null)
 			{
@@ -905,7 +909,7 @@ namespace BitDiffer.Common.Model
 
 		private void WriteHtmlSummaryForChange(TextWriter tw)
 		{
-			if (this.Change != ChangeType.None)
+			if (ShouldWriteHtmlSummaryForChange)
 			{
 				tw.Write("<p class='change-summary'>");
 				tw.Write(GetHtmlChangeDescription());
