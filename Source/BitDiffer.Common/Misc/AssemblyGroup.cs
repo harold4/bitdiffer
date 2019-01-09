@@ -207,7 +207,7 @@ namespace BitDiffer.Common.Misc
 
 				foreach (AssemblyDetail detail in _assemblies)
 				{
-					tw.WriteLine($"* {detail.Location}");
+					tw.WriteLine($"* {MarkdownUtility.ToInlineCode(detail.Location)}");
 				}
 
 				tw.WriteLine();

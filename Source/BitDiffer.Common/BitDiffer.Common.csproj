@@ -129,6 +129,7 @@
     <Compile Include="Utility\Log.cs" />
     <Compile Include="Utility\ObsoleteUtil.cs" />
     <Compile Include="Utility\Stopwatch.cs" />
+    <Compile Include="Utility\MarkdownUtility.cs" />
     <Compile Include="Utility\ThreadPoolWait.cs" />
     <Compile Include="Utility\VisibilityUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
