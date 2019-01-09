@@ -25,6 +25,11 @@ namespace BitDiffer.Common.Model
 			AppendClauseHtml(sb, false, "Assembly attributes changed");
 		}
 
+		protected override void GetMarkdownDescriptionBriefMembers(StringBuilder sb)
+		{
+			AppendClauseMarkdown(sb, "Assembly attributes changed");
+		}
+
 		protected override void ProcessChildChange(RootDetail child, ChangeType change)
 		{
 			base.ProcessChildChange(child, change);

@@ -22,6 +22,11 @@ namespace BitDiffer.Common.Model
 			AppendClauseHtml(sb, false, "Assembly resources changed");
 		}
 
+		protected override void GetMarkdownDescriptionBriefMembers(StringBuilder sb)
+		{
+			AppendClauseMarkdown(sb, "Assembly resources changed");
+		}
+
 		protected override int RelativeSortOrder
 		{
 			get { return -6; }
