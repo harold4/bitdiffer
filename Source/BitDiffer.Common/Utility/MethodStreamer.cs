@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -218,7 +219,15 @@ namespace BitDiffer.Common.Utility
             }
             else if (_method is ConstructorInfo)
             {
-                return GetNameForType(_method.Module.ResolveType(token, _method.DeclaringType.GetGenericArguments(), null));
+	            var member = _method.Module.ResolveMember(token, _method.DeclaringType.GetGenericArguments(), null);
+	            if (member is Type type)
+	            {
+		            return GetNameForType(type);
+	            }
+	            else
+	            {
+		            return GetNameForMember(member);
+	            }
             }
             else
             {
