@@ -4,6 +4,7 @@ namespace BitDiffer.Common.Model
 	{
 		Default = 0,
 		Extension = 1,
-		Obsolete = 2
+		CompilerGenerated = 2,
+		Obsolete = 3
 	}
 }

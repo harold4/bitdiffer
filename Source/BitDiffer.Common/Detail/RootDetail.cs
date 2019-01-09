@@ -233,21 +233,24 @@ namespace BitDiffer.Common.Model
 				child.CalcInheritedChanges();
 				if (child.Change != ChangeType.None)
 				{
-					ProcessChildChange(child.GetType(), child.Change);
+					ProcessChildChange(child, child.Change);
 				}
 			}
 		}
 
-		protected virtual void ProcessChildChange(Type childType, ChangeType change)
+		protected virtual void ProcessChildChange(RootDetail child, ChangeType change)
 		{
 			if (change != ChangeType.None)
 			{
-				if (childType == typeof(AttributeDetail))
+				if (child is AttributeDetail attributeDetail)
 				{
-					_changeAllChildren |= ChangeType.AttributesChanged;
-					if (this.CollapseChildren)
+					if (attributeDetail.AttributeType != AttributeType.CompilerGenerated)
 					{
-						_changeThisInstance |= ChangeType.AttributesChanged;
+						_changeAllChildren |= ChangeType.AttributesChanged;
+						if (this.CollapseChildren)
+						{
+							_changeThisInstance |= ChangeType.AttributesChanged;
+						}
 					}
 				}
 				else
