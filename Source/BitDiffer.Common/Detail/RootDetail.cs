@@ -244,6 +244,10 @@ namespace BitDiffer.Common.Model
 				if (childType == typeof(AttributeDetail))
 				{
 					_changeAllChildren |= ChangeType.AttributesChanged;
+					if (this.CollapseChildren)
+					{
+						_changeThisInstance |= ChangeType.AttributesChanged;
+					}
 				}
 				else
 				{
