@@ -282,21 +282,23 @@ namespace BitDiffer.Common.Utility
 
 		public void AppendQuotedValue(object value)
 		{
-			if (value == null)
+			switch (value)
 			{
-				AppendText("null");
-			}
-			else if (value is string)
-			{
-				AppendText("\"" + value.ToString() + "\"", "string");
-			}
-			else if (value is char)
-			{
-				AppendText("'" + value.ToString() + "'", "string");
-			}
-			else
-			{
-				AppendText(value.ToString());
+				case null:
+					AppendText("null");
+					break;
+				case string s:
+					AppendText("\"" + s + "\"", "string");
+					break;
+				case char c:
+					AppendText("'" + c + "'", "string");
+					break;
+				case bool b:
+					AppendText(b.ToString().ToLower(), "keyword");
+					break;
+				default:
+					AppendText(value.ToString());
+					break;
 			}
 		}
 
