@@ -67,14 +67,15 @@ namespace BitDiffer.Common.Model
 		{
 			get 
 			{
-				Visibility vis = _visibility;
-				MemberDetail check = this.Parent as MemberDetail;
+				// TODO ask maintainer why are we checking MemberDetail.Visibility up the tree and never using it
+				//Visibility vis = _visibility;
+				//MemberDetail check = this.Parent as MemberDetail;
 
-				while (vis == Visibility.Invalid && check != null)
-				{
-					vis = check.Visibility;
-					check = check.Parent as MemberDetail;
-				}
+				//while (vis == Visibility.Invalid && check != null)
+				//{
+				//	vis = check.Visibility;
+				//	check = check.Parent as MemberDetail;
+				//}
 
 				return _visibility;
 			}
