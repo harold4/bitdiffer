@@ -227,14 +227,13 @@ namespace BitDiffer.Common.Model
 				return;
 			}
 
-			foreach (RootDetail child in _children)
+			foreach (var child in _children.Cast<RootDetail>())
 			{
 				child.CalcInheritedChanges();
-			}
-
-			for (int i = 0; i < _children.Count; i++)
-			{
-				ProcessChildChange(_children[i].GetType(), ((ICanCompare)_children[i]).Change);
+				if (child.Change != ChangeType.None)
+				{
+					ProcessChildChange(child.GetType(), child.Change);
+				}
 			}
 		}
 
