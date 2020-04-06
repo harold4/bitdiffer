@@ -36,9 +36,13 @@ namespace BitDiffer.Common.Model
             // In some cases attributes do not resolve with .winmd files so this logs a warning but continues
             try
             {
-                IList<CustomAttributeData> cads = CustomAttributeData.GetCustomAttributes(mi);
+				var cads = CustomAttributeData.GetCustomAttributes(mi)
+					.OrderBy(x => x.AttributeType.Name)
+					.ThenBy(x => x.AttributeType.Namespace)
+					.ThenBy(x => x.ConstructorArguments.Count)
+					.ThenBy(x => x.ConstructorArguments.FirstOrDefault().Value);
 
-                foreach (CustomAttributeData cad in cads)
+				foreach (CustomAttributeData cad in cads)
                 {
 	                var attribute = new AttributeDetail(this, cad);
 	                switch (attribute.AttributeType)
