@@ -12,7 +12,7 @@ namespace BitDiffer.Common.Configuration
         private bool _tryResolveGACFirst = false;
         private bool _multithread = true;
         private string _referenceDirectories = null;
-        private AppDomainIsolationLevel _isolationLevel = AppDomainIsolationLevel.AutoDetect;
+        private AppDomainIsolationLevel _isolationLevel = AppDomainIsolationLevel.High;
         public static DiffConfig Default = new DiffConfig();
 
         public DiffConfig()
