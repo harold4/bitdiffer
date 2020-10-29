@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
 using System.ComponentModel;
-
+using System.Runtime.CompilerServices;
 using BitDiffer.Common.Interfaces;
 using BitDiffer.Common.Utility;
 using BitDiffer.Common.Misc;
@@ -29,15 +29,39 @@ namespace BitDiffer.Common.Model
 
 			csb.AppendType(cad.Constructor.DeclaringType);
 
-			if (cad.ConstructorArguments.Count > 0)
+			using (var e = cad.ConstructorArguments.GetEnumerator())
 			{
-				csb.AppendText("(");
-				csb.AppendQuotedValue(cad.ConstructorArguments[0].Value);
-				csb.AppendText(")");
+				if (e.MoveNext())
+				{
+					csb.AppendText("(");
+					csb.AppendQuotedValue(e.Current.Value);
+					while (e.MoveNext())
+					{
+						csb.AppendText(", ");
+						csb.AppendQuotedValue(e.Current.Value);
+					}
+					csb.AppendText(")");
+				}
 			}
 
 			_declaration = csb.ToString();
 			_declarationHtml = csb.ToHtmlString();
+			_declarationMarkdown = csb.ToMarkdownString();
+
+			if (cad.AttributeType.IsAssignableFrom(typeof(ExtensionAttribute)))
+			{
+				AttributeType = AttributeType.Extension;
+				AppendInCode = false;
+			}
+			else if (cad.AttributeType.IsAssignableFrom(typeof(ObsoleteAttribute)))
+			{
+				AttributeType = AttributeType.Obsolete;
+			}
+			else if (cad.AttributeType.IsAssignableFrom(typeof(CompilerGeneratedAttribute)))
+			{
+				AttributeType = AttributeType.CompilerGenerated;
+				AppendInCode = false;
+			}
 		}
 
 		protected override bool FullNameRoot
@@ -45,10 +69,15 @@ namespace BitDiffer.Common.Model
 			get { return true; }
 		}
 
+		public AttributeType AttributeType { get; }
+
 		public override string GetTextTitle()
 		{
 			return "Attribute " + _name;
 		}
+
+		public bool AppendInCode { get; } = true;
+
 
 		protected override void ApplyFilterInstance(ComparisonFilter filter)
 		{

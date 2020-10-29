@@ -9,48 +9,58 @@ namespace BitDiffer.Common.Exceptions
 {
     public static class ExceptionExtension
     {
-        public static string GetNestedExceptionMessage(this Exception ex)
+	    private static StringBuilder AppendIndent(this StringBuilder sb, int depth)
+	    {
+		    if (depth == 0)
+			    return sb;
+		    return sb.Append(' ', 4 * depth);
+	    }
+
+		private static void AppendNestedExceptionMessage(StringBuilder sb, Exception ex, int depth = 0)
+		{
+			while (ex != null)
+			{
+				if (depth > 0)
+				{
+					sb.AppendLine();
+					sb.AppendIndent(depth);
+					sb.Append(" -> ");
+				}
+
+				sb.Append(ex.Message);
+
+				var typeLoadException = ex as ReflectionTypeLoadException;
+				if (typeLoadException != null)
+				{
+					var loaderExceptions = typeLoadException.LoaderExceptions;
+					sb.AppendLine()
+						.AppendIndent(depth)
+						.AppendFormat("LoaderExceptions ({0})", loaderExceptions.Length);
+					foreach (Exception loaderException in typeLoadException.LoaderExceptions)
+					{
+						AppendNestedExceptionMessage(sb, loaderException, depth + 1);
+					}
+				}
+				else
+				{
+					var exFileNotFound = ex as FileNotFoundException;
+					if (exFileNotFound != null)
+					{
+						sb.AppendLine()
+							.AppendIndent(depth)
+							.AppendFormat("File:{0} FusionLog:{1} Message:{2}", exFileNotFound.FileName, exFileNotFound.FusionLog, exFileNotFound.Message);
+					}
+				}
+
+				ex = ex.InnerException;
+			}
+		}
+
+		public static string GetNestedExceptionMessage(this Exception ex)
         {
             var sb = new StringBuilder();
-
-            while (ex != null)
-            {
-                if (sb.Length > 0)
-                {
-                    sb.Append(" -> ");
-                }
-
-                sb.Append(ex.Message);
-
-                if (ex is System.Reflection.ReflectionTypeLoadException)
-                {
-                    var typeLoadException = ex as ReflectionTypeLoadException;
-                    var loaderExceptions = typeLoadException.LoaderExceptions;
-                    foreach (Exception e in typeLoadException.LoaderExceptions)
-                    {
-                        
-                        var exFileNotFound = e as FileNotFoundException;
-                        if (exFileNotFound != null)
-                        {
-                            sb.Append(string.Format("\nFile:{0} FusionLog:{1} Message:{2}",
-                                exFileNotFound.FileName, exFileNotFound.FusionLog, exFileNotFound.Message));
-                        }
-                        else
-                        {
-                            sb.Append("\n" + e.Message);
-                        }
-                    }
-                }
-                else if (ex is FileNotFoundException)
-                {
-                    var exFileNotFound = ex as FileNotFoundException;
-                    sb.Append(string.Format("\nFile:{0} FusionLog:{1} Message:{2}",
-                        exFileNotFound.FileName, exFileNotFound.FusionLog, exFileNotFound.Message));
-                }
-
-                ex = ex.InnerException;
-            }
-            return sb.ToString();
+			AppendNestedExceptionMessage(sb, ex);
+	        return sb.ToString();
         }
     }
 }

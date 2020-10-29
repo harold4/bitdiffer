@@ -10,6 +10,7 @@ using System.Xml;
 using BitDiffer.Common.Interfaces;
 using BitDiffer.Common.Utility;
 using BitDiffer.Common.Misc;
+using System.Linq;
 
 namespace BitDiffer.Common.Model
 {
@@ -35,7 +36,12 @@ namespace BitDiffer.Common.Model
 
 			AttributesDetail attributes = new AttributesDetail(this);
 			_children.Add(attributes);
-			foreach (CustomAttributeData cad in CustomAttributeData.GetCustomAttributes(assembly))
+			foreach (CustomAttributeData cad in CustomAttributeData.GetCustomAttributes(assembly)
+				.OrderBy(x => x.AttributeType.Name)
+				.ThenBy(x => x.AttributeType.Namespace)
+				.ThenBy(x => x.ConstructorArguments.Count)
+				.ThenBy(x => x.ConstructorArguments.FirstOrDefault().Value)
+				)
 			{
 				AttributeDetail ad = new AttributeDetail(attributes, cad);
 				ad.Visibility = Visibility.Exported;

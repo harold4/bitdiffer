@@ -72,5 +72,15 @@ namespace BitDiffer.Common.Model
 		{
 			return "Resource";
 		}
+
+		protected override void ApplyFilterInstance(ComparisonFilter filter)
+		{
+			base.ApplyFilterInstance(filter);
+
+			if (!filter.CompareMethodImplementations)
+			{
+				_changeThisInstance &= ~ChangeType.ContentChanged;
+			}
+		}
 	}
 }

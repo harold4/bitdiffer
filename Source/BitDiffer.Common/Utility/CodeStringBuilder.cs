@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Reflection;
 
@@ -10,9 +11,10 @@ namespace BitDiffer.Common.Utility
 {
 	public class CodeStringBuilder
 	{
-		private AppendMode _mode = AppendMode.Both;
-		private StringBuilder _sbText = new StringBuilder(25);
-		private StringBuilder _sbHtml = new StringBuilder(75);
+		private AppendMode _mode = AppendMode.All;
+		private readonly StringBuilder _sbText = new StringBuilder(25);
+		private readonly StringBuilder _sbHtml = new StringBuilder(75);
+		private readonly StringBuilder _sbMarkdown = new StringBuilder(50); // TODO choose initial size more rigorously -- 50 is a guess.
 
 		public CodeStringBuilder()
 		{
@@ -51,8 +53,30 @@ namespace BitDiffer.Common.Utility
 
 		public void AppendType(Type type, bool includeNamespace)
 		{
-			string typeAsKeyword = GetTypeNameAsKeyword(type);
+			if (type.IsArray)
+			{
+				// simplify arrays
+				Type elementType = type.GetElementType();
+				if (elementType != null)
+				{
+					OpenText("usertype");
+					AppendType(elementType, includeNamespace);
+					AppendText("[]");
+					CloseText("usertype");
+					return;
+				}
+			}
 
+			if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+			{
+				OpenText("usertype");
+				AppendType(Nullable.GetUnderlyingType(type), includeNamespace);
+				AppendText("?");
+				CloseText("usertype");
+				return;
+			}
+
+			string typeAsKeyword = GetTypeNameAsKeyword(type);
 			if (typeAsKeyword != null)
 			{
 				AppendKeyword(typeAsKeyword);
@@ -65,33 +89,50 @@ namespace BitDiffer.Common.Utility
 				return;
 			}
 
+			string typeName = type.Name;
+			// UI only: cut out "Attribute" part
+			if (typeof(Attribute).IsAssignableFrom(type))
+			{
+				typeName = typeName.Substring(0, typeName.Length - 9); // 9 == length of "Attribute"
+			}
+
 			// Dont show the namespaces on user types in the UI - but keep them in text, for comparison and reports
 			if (includeNamespace)
 			{
 				AppendMode restore = _mode;
-				_mode &= ~AppendMode.Html;
+
+				_mode &= ~AppendMode.NonText;
 				AppendText(type.Namespace);
 				AppendText(".");
-				_mode = restore;
-			}
+				AppendTypeName(type, type.Name);
 
-			if (type.IsGenericType)
-			{
-				AppendGeneric(type.Name, type.GetGenericArguments(), "usertype");
+				// Now non-text
+				_mode |= AppendMode.NonText;
+				_mode &= ~AppendMode.Text;
+				AppendTypeName(type, typeName);
+
+				_mode = restore;
 			}
 			else
 			{
-				AppendText(type.Name, "usertype");
+				AppendTypeName(type, typeName);
 			}
 		}
 
-		public void AppendText(string word, string css)
+		private void AppendTypeName(Type type, string typeName)
 		{
-			if ((_mode & AppendMode.Text) != 0)
+			if (type.IsGenericType)
 			{
-				_sbText.Append(word);
+				AppendGeneric(typeName, type.GetGenericArguments(), "usertype");
 			}
+			else
+			{
+				AppendText(typeName, "usertype");
+			}
+		}
 
+		public void OpenText(string css)
+		{
 			if ((_mode & AppendMode.Html) != 0)
 			{
 				if (css != null)
@@ -100,14 +141,41 @@ namespace BitDiffer.Common.Utility
 					_sbHtml.Append(css);
 					_sbHtml.Append("'>");
 				}
+			}
+		}
 
-				_sbHtml.Append(HtmlEncode(word));
-
+		public void CloseText(string css)
+		{
+			if ((_mode & AppendMode.Html) != 0)
+			{
 				if (css != null)
 				{
 					_sbHtml.Append("</span>");
 				}
 			}
+		}
+
+		public void AppendText(string word, string css)
+		{
+			OpenText(css);
+
+			if ((_mode & AppendMode.Text) != 0)
+			{
+				_sbText.Append(word);
+			}
+
+			if ((_mode & AppendMode.Html) != 0)
+			{
+				_sbHtml.Append(HtmlEncode(word));
+			}
+
+			if ((_mode & AppendMode.Markdown) != 0)
+			{
+				_sbMarkdown.Append(word);
+			}
+
+			CloseText(css);
+
 		}
 
 		public void AppendNewline()
@@ -121,6 +189,11 @@ namespace BitDiffer.Common.Utility
 			{
 				_sbHtml.Append("<br>");
 			}
+
+			if ((_mode & AppendMode.Markdown) != 0)
+			{
+				_sbMarkdown.Append(Environment.NewLine);
+			}
 		}
 
 		public void AppendIndent()
@@ -133,6 +206,11 @@ namespace BitDiffer.Common.Utility
 			if ((_mode & AppendMode.Html) != 0)
 			{
 				_sbHtml.Append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+			}
+
+			if ((_mode & AppendMode.Markdown) != 0)
+			{
+				_sbMarkdown.Append("     ");
 			}
 		}
 
@@ -169,9 +247,22 @@ namespace BitDiffer.Common.Utility
 			AppendType(pi.ParameterType);
 		}
 
-		public void AppendRawHtml(string html)
+		public void AppendRaw(string text = null, string html = null, string markdown = null)
 		{
-			_sbHtml.Append(html);
+			if (text != null)
+			{
+				_sbText.Append(text);
+			}
+
+			if (html != null)
+			{
+				_sbHtml.Append(html);
+			}
+
+			if (markdown != null)
+			{
+				_sbMarkdown.Append(markdown);
+			}
 		}
 
 		public void AppendGenericRestrictions(Type type)
@@ -251,21 +342,23 @@ namespace BitDiffer.Common.Utility
 
 		public void AppendQuotedValue(object value)
 		{
-			if (value == null)
+			switch (value)
 			{
-				AppendText("null");
-			}
-			else if (value is string)
-			{
-				AppendText("\"" + value.ToString() + "\"", "string");
-			}
-			else if (value is char)
-			{
-				AppendText("'" + value.ToString() + "'", "string");
-			}
-			else
-			{
-				AppendText(value.ToString());
+				case null:
+					AppendText("null");
+					break;
+				case string s:
+					AppendText("\"" + s + "\"", "string");
+					break;
+				case char c:
+					AppendText("'" + c + "'", "string");
+					break;
+				case bool b:
+					AppendText(b.ToString().ToLower(), "keyword");
+					break;
+				default:
+					AppendText(value.ToString());
+					break;
 			}
 		}
 
@@ -310,6 +403,11 @@ namespace BitDiffer.Common.Utility
 			{
 				_sbHtml.Remove(_sbHtml.Length - count, count);
 			}
+
+			if ((_mode & AppendMode.Markdown) != 0)
+			{
+				_sbMarkdown.Remove(_sbMarkdown.Length - count, count);
+			}
 		}
 
 		private string HtmlEncode(string text)
@@ -321,72 +419,74 @@ namespace BitDiffer.Common.Utility
 
 		private string GetTypeNameAsKeyword(Type type)
 		{
-			if (type.IsGenericType)
+			if (type == typeof(void))
 			{
-				if (type.GetGenericTypeDefinition() == typeof(Nullable<>))
-				{
-					string baseType = GetTypeNameAsKeyword(Nullable.GetUnderlyingType(type));
-
-					if (baseType != null)
-					{
-						return baseType + "?";
-					}
-				}
+				return "void";
 			}
-			else
+
+			if (type == typeof(string))
 			{
-				if (type == typeof(void))
-				{
-					return "void";
-				}
-				if (type == typeof(string))
-				{
-					return "string";
-				}
-				else if (type == typeof(int))
-				{
-					return "int";
-				}
-				else if (type == typeof(long))
-				{
-					return "long";
-				}
-				else if (type == typeof(char))
-				{
-					return "char";
-				}
-				else if (type == typeof(bool))
-				{
-					return "bool";
-				}
-				else if (type == typeof(byte))
-				{
-					return "byte";
-				}
-				else if (type == typeof(DateTime))
-				{
-					return "DateTime";
-				}
-				else if (type == typeof(decimal))
-				{
-					return "decimal";
-				}
-				else if (type == typeof(double))
-				{
-					return "double";
-				}
-				else if (type == typeof(uint))
-				{
-					return "uint";
-				}
-				else if (type == typeof(ulong))
-				{
-					return "ulong";
-				}
-				else if (type == typeof(object))
-				{
-					return "object";
-				}
+				return "string";
+			}
+			else if (type == typeof(byte))
+			{
+				return "byte";
+			}
+			else if (type == typeof(short))
+			{
+				return "short";
+			}
+			else if (type == typeof(int))
+			{
+				return "int";
+			}
+			else if (type == typeof(long))
+			{
+				return "long";
+			}
+			else if (type == typeof(char))
+			{
+				return "char";
+			}
+			else if (type == typeof(bool))
+			{
+				return "bool";
+			}
+			else if (type == typeof(DateTime))
+			{
+				return "DateTime";
+			}
+			else if (type == typeof(decimal))
+			{
+				return "decimal";
+			}
+			else if (type == typeof(double))
+			{
+				return "double";
+			}
+			else if (type == typeof(float))
+			{
+				return "float";
+			}
+			else if (type == typeof(sbyte))
+			{
+				return "sbyte";
+			}
+			else if (type == typeof(ushort))
+			{
+				return "ushort";
+			}
+			else if (type == typeof(uint))
+			{
+				return "uint";
+			}
+			else if (type == typeof(ulong))
+			{
+				return "ulong";
+			}
+			else if (type == typeof(object))
+			{
+				return "object";
 			}
 
 			return null;
@@ -441,6 +541,11 @@ namespace BitDiffer.Common.Utility
 		public virtual string ToHtmlString()
 		{
 			return _sbHtml.ToString();
+		}
+
+		public virtual string ToMarkdownString()
+		{
+			return _sbMarkdown.ToString();
 		}
 	}
 }

@@ -38,15 +38,15 @@ namespace BitDiffer.Common.Model
 
 			AppendAttributesDeclaration(csb);
 
-			csb.Mode = AppendMode.Html;
+			csb.Mode = AppendMode.NonText;
 			csb.AppendVisibility(_visibility);
 			csb.AppendText(" ");
-			csb.Mode = AppendMode.Both;
+			csb.Mode = AppendMode.All;
 
 			csb.AppendKeyword("enum ");
 			csb.AppendText(type.Name);
 
-			csb.Mode = AppendMode.Html;
+			csb.Mode = AppendMode.NonText;
 			csb.AppendNewline();
 			csb.AppendText("{");
 			csb.AppendNewline();
@@ -63,10 +63,11 @@ namespace BitDiffer.Common.Model
 			csb.RemoveCharsFromEnd(",".Length);
 			csb.AppendNewline();
 			csb.AppendText("}");
-			csb.Mode = AppendMode.Both;
+			csb.Mode = AppendMode.All;
 
 			_declaration = csb.ToString();
 			_declarationHtml = csb.ToHtmlString();
+			_declarationMarkdown = csb.ToMarkdownString();
 		}
 
 		public override bool CollapseChildren

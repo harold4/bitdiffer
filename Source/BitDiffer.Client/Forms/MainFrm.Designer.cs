@@ -106,6 +106,7 @@ namespace BitDiffer.Client.Forms
             this.resultToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.showTipTimer = new System.Windows.Forms.Timer(this.components);
             this.windowStatePersister1 = new BitDiffer.Client.Controls.WindowStatePersister(this.components);
+            this.exportFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -493,19 +494,19 @@ namespace BitDiffer.Client.Forms
             // tsmiHelpSearch
             // 
             this.tsmiHelpSearch.Name = "tsmiHelpSearch";
-            this.tsmiHelpSearch.Size = new System.Drawing.Size(152, 22);
+            this.tsmiHelpSearch.Size = new System.Drawing.Size(120, 22);
             this.tsmiHelpSearch.Text = "Help";
             this.tsmiHelpSearch.Click += new System.EventHandler(this.tsmiHelpSearch_Click);
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(117, 6);
             // 
             // tsmiAbout
             // 
             this.tsmiAbout.Name = "tsmiAbout";
-            this.tsmiAbout.Size = new System.Drawing.Size(152, 22);
+            this.tsmiAbout.Size = new System.Drawing.Size(120, 22);
             this.tsmiAbout.Text = "&About...";
             this.tsmiAbout.Click += new System.EventHandler(this.tsmiAbout_Click);
             // 
@@ -808,6 +809,10 @@ namespace BitDiffer.Client.Forms
             // 
             this.windowStatePersister1.ParentForm = this;
             // 
+            // exportFileDialog
+            // 
+            this.exportFileDialog.Filter = "HTML Report (*.html)|*.html|Markdown Report (*.md)|*.md|XML Report (*.xml)|*.xml";
+            // 
             // MainFrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 14F);
@@ -925,5 +930,6 @@ namespace BitDiffer.Client.Forms
         private System.Windows.Forms.ToolStripMenuItem tsmiProtected;
         private System.Windows.Forms.ToolStripMenuItem tsmiInternal;
         private System.Windows.Forms.ToolStripMenuItem tsmiPrivate;
+		private System.Windows.Forms.SaveFileDialog exportFileDialog;
 	}
 }

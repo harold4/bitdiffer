@@ -37,6 +37,7 @@ namespace BitDiffer.Common.Model
 
 			_declaration = csb.ToString();
 			_declarationHtml = csb.ToHtmlString();
+			_declarationMarkdown = csb.ToMarkdownString();
 		}
 
 		protected override ChangeType CompareInstance(ICanCompare previous, bool suppressBreakingChanges)

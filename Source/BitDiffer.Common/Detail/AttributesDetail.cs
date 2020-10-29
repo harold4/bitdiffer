@@ -17,7 +17,7 @@ namespace BitDiffer.Common.Model
 
 		protected override void GetTextDescriptionBriefMembers(StringBuilder sb)
 		{
-			AppendClause(sb, "Assembly attributes changed");
+			AppendClauseText(sb, "Assembly attributes changed");
 		}
 
 		protected override void GetHtmlChangeDescriptionBriefMembers(StringBuilder sb)
@@ -25,9 +25,14 @@ namespace BitDiffer.Common.Model
 			AppendClauseHtml(sb, false, "Assembly attributes changed");
 		}
 
-		protected override void ProcessChildChange(Type childType, ChangeType change)
+		protected override void GetMarkdownDescriptionBriefMembers(StringBuilder sb)
 		{
-			base.ProcessChildChange(childType, change);
+			AppendClauseMarkdown(sb, "Assembly attributes changed");
+		}
+
+		protected override void ProcessChildChange(RootDetail child, ChangeType change)
+		{
+			base.ProcessChildChange(child, change);
 
 			if (_changeAllChildren != ChangeType.None)
 			{

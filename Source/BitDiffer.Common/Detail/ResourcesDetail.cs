@@ -14,12 +14,17 @@ namespace BitDiffer.Common.Model
 
 		protected override void GetTextDescriptionBriefMembers(StringBuilder sb)
 		{
-			AppendClause(sb, "Assembly resources changed");
+			AppendClauseText(sb, "Assembly resources changed");
 		}
 
 		protected override void GetHtmlChangeDescriptionBriefMembers(StringBuilder sb)
 		{
 			AppendClauseHtml(sb, false, "Assembly resources changed");
+		}
+
+		protected override void GetMarkdownDescriptionBriefMembers(StringBuilder sb)
+		{
+			AppendClauseMarkdown(sb, "Assembly resources changed");
 		}
 
 		protected override int RelativeSortOrder

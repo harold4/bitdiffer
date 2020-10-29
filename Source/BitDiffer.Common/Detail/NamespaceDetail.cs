@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using BitDiffer.Common.Utility;
 
 namespace BitDiffer.Common.Model
 {
@@ -35,6 +36,12 @@ namespace BitDiffer.Common.Model
 		{
 			get { return false; }
 		}
+
+		public override bool ExcludeChildrenFromReport
+		{
+			get { return this.CollapseChildren; }// || ChangeTypeUtil.IsNonBreakingAddRemove(CombineAllChangesThisInstanceGoingForward()); }
+		}
+
 
 		public override string GetTextTitle()
 		{

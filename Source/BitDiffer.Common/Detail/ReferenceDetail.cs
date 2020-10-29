@@ -49,6 +49,11 @@ namespace BitDiffer.Common.Model
 			return _assemblyName;
 		}
 
+		public override string GetMarkdownDeclaration()
+		{
+			return _assemblyName;
+		}
+
 		protected override bool FullNameRoot
 		{
 			get { return true; }
@@ -84,6 +89,15 @@ namespace BitDiffer.Common.Model
 		protected override string SerializeGetElementName()
 		{
 			return "Reference";
+		}
+
+		protected override bool ShouldWriteHtmlSummaryForChange
+		{
+			get
+			{
+				// Reference: it's obviously a value change, don't report a non-breaking change.
+				return Change != ChangeType.ValueChangedNonBreaking && base.ShouldWriteHtmlSummaryForChange;
+			}
 		}
 	}
 }

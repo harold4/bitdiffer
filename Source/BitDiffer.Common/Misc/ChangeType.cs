@@ -21,6 +21,8 @@ namespace BitDiffer.Common.Misc
 		DeclarationChangedBreaking = 1024,
 		DeclarationChangedNonBreaking = 2048,
 		MembersChangedBreaking = 4096,
-		MembersChangedNonBreaking = 8192
+		MembersChangedNonBreaking = 8192,
+		ObsoleteChangedBreaking = 16384,
+		ObsoleteChangedNonBreaking = 32768,
 	};
 }

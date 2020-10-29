@@ -732,16 +732,11 @@ namespace BitDiffer.Client.Forms
 				return;
 			}
 
-			SaveFileDialog sfd = new SaveFileDialog();
-			sfd.Filter = "HTML Report (*.html)|*.html|XML Report (*.xml)|*.xml";
-			sfd.CheckPathExists = true;
-			sfd.AddExtension = true;
-
-			if (sfd.ShowDialog(this) == DialogResult.OK)
+			if (exportFileDialog.ShowDialog(this) == DialogResult.OK)
 			{
-				_ac.WriteReport(sfd.FileName, AssemblyComparisonXmlWriteMode.Normal);
+				_ac.WriteReport(exportFileDialog.FileName, AssemblyComparisonXmlWriteMode.Normal);
 
-				Process.Start(sfd.FileName);
+				Process.Start(exportFileDialog.FileName);
 			}
 		}
 
