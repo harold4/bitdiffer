@@ -5,35 +5,35 @@ using System.ComponentModel;
 
 namespace BitDiffer.Tests.Subject
 {
-	internal interface InterfaceBecomesInternal
-	{
+    internal interface InterfaceBecomesInternal
+    {
 
-	}
+    }
 
-	public interface InterfaceBecomesPublic
-	{
-	}
+    public interface InterfaceBecomesPublic
+    {
+    }
 
-	public interface PublicInterfacePropertyChanges
-	{
-		string Prop { get; }
-	}
+    public interface PublicInterfacePropertyChanges
+    {
+        string Prop { get; }
+    }
 
-	[Description("InterfaceAddsAttribute")]
-	public interface InterfaceAddsAttribute
-	{
-	}
+    [Description("InterfaceAddsAttribute")]
+    public interface InterfaceAddsAttribute
+    {
+    }
 
-	internal interface InterfaceRemovesAttributeAndBecomesInternal
-	{
-	}
+    internal interface InterfaceRemovesAttributeAndBecomesInternal
+    {
+    }
 
-	internal interface InternalInterfaceMethodChanges
-	{
-		void Method1(string x);
-	}
+    internal interface InternalInterfaceMethodChanges
+    {
+        void Method1(string x);
+    }
 
-	public interface InterfaceNoChange
-	{
-	}
+    public interface InterfaceNoChange
+    {
+    }
 }

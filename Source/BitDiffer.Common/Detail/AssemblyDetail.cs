@@ -14,55 +14,55 @@ using System.Linq;
 
 namespace BitDiffer.Common.Model
 {
-	[Serializable]
-	public class AssemblyDetail : ParentDetail, ICloneable
-	{
-		private string _location;
+    [Serializable]
+    public class AssemblyDetail : ParentDetail, ICloneable
+    {
+        private string _location;
 
-		public AssemblyDetail()
-		{
-		}
+        public AssemblyDetail()
+        {
+        }
 
-		public AssemblyDetail(Assembly assembly)
-		{
-			_name = "";
-			_location = assembly.Location;
+        public AssemblyDetail(Assembly assembly)
+        {
+            _name = "";
+            _location = assembly.Location;
 
-			_children.Add(new TraitDetail(this, "FullName", assembly.FullName));
-			_children.Add(new TraitDetail(this, "Version", assembly.GetName().Version.ToString()));
-			_children.Add(new TraitDetail(this, "RuntimeVersion", assembly.ImageRuntimeVersion));
-			_children.Add(new TraitDetail(this, "PublicKeyToken", GenericUtility.GetHashText(assembly.GetName().GetPublicKeyToken())));
-			_children.Add(new TraitDetail(this, "Flags", assembly.GetName().Flags.ToString()));
+            _children.Add(new TraitDetail(this, "FullName", assembly.FullName));
+            _children.Add(new TraitDetail(this, "Version", assembly.GetName().Version.ToString()));
+            _children.Add(new TraitDetail(this, "RuntimeVersion", assembly.ImageRuntimeVersion));
+            _children.Add(new TraitDetail(this, "PublicKeyToken", GenericUtility.GetHashText(assembly.GetName().GetPublicKeyToken())));
+            _children.Add(new TraitDetail(this, "Flags", assembly.GetName().Flags.ToString()));
 
-			AttributesDetail attributes = new AttributesDetail(this);
-			_children.Add(attributes);
-			foreach (CustomAttributeData cad in CustomAttributeData.GetCustomAttributes(assembly)
-				.OrderBy(x => x.AttributeType.Name)
-				.ThenBy(x => x.AttributeType.Namespace)
-				.ThenBy(x => x.ConstructorArguments.Count)
-				.ThenBy(x => x.ConstructorArguments.FirstOrDefault().Value)
-				)
-			{
-				AttributeDetail ad = new AttributeDetail(attributes, cad);
-				ad.Visibility = Visibility.Exported;
-				attributes.Children.Add(ad);
-			}
+            AttributesDetail attributes = new AttributesDetail(this);
+            _children.Add(attributes);
+            foreach (CustomAttributeData cad in CustomAttributeData.GetCustomAttributes(assembly)
+                .OrderBy(x => x.AttributeType.Name)
+                .ThenBy(x => x.AttributeType.Namespace)
+                .ThenBy(x => x.ConstructorArguments.Count)
+                .ThenBy(x => x.ConstructorArguments.FirstOrDefault().Value)
+                )
+            {
+                AttributeDetail ad = new AttributeDetail(attributes, cad);
+                ad.Visibility = Visibility.Exported;
+                attributes.Children.Add(ad);
+            }
 
-			ResourcesDetail resources = new ResourcesDetail(this);
-			_children.Add(resources);
-			foreach (string resource in assembly.GetManifestResourceNames())
-			{
-				resources.Children.Add(new ResourceDetail(resources, resource, GenericUtility.ReadStream(assembly, resource)));
-			}
+            ResourcesDetail resources = new ResourcesDetail(this);
+            _children.Add(resources);
+            foreach (string resource in assembly.GetManifestResourceNames())
+            {
+                resources.Children.Add(new ResourceDetail(resources, resource, GenericUtility.ReadStream(assembly, resource)));
+            }
 
-			ReferencesDetail references = new ReferencesDetail(this);
-			_children.Add(references);
-			foreach (AssemblyName an in assembly.GetReferencedAssemblies())
-			{
-				references.Children.Add(new ReferenceDetail(references, an));
-			}
+            ReferencesDetail references = new ReferencesDetail(this);
+            _children.Add(references);
+            foreach (AssemblyName an in assembly.GetReferencedAssemblies())
+            {
+                references.Children.Add(new ReferenceDetail(references, an));
+            }
 
-			Type[] types = assembly.GetTypes();
+            Type[] types = assembly.GetTypes();
 
             foreach (Type type in types)
             {
@@ -92,79 +92,79 @@ namespace BitDiffer.Common.Model
                     Log.Warn("Failed loading Type '{0}': {1}", type.FullName, tle.Message);
                 }
             }
-		}
+        }
 
-		private NamespaceDetail FindOrCreateNamespace(string ns)
-		{
-			if (ns == null)
-			{
-				ns = "*";
-			}
+        private NamespaceDetail FindOrCreateNamespace(string ns)
+        {
+            if (ns == null)
+            {
+                ns = "*";
+            }
 
-			foreach (NamespaceDetail nsd in FilterChildren<NamespaceDetail>())
-			{
-				if (nsd.Name == ns)
-				{
-					return nsd;
-				}
-			}
+            foreach (NamespaceDetail nsd in FilterChildren<NamespaceDetail>())
+            {
+                if (nsd.Name == ns)
+                {
+                    return nsd;
+                }
+            }
 
-			NamespaceDetail newns = new NamespaceDetail(this, ns);
-			_children.Add(newns);
-			return newns;
-		}
+            NamespaceDetail newns = new NamespaceDetail(this, ns);
+            _children.Add(newns);
+            return newns;
+        }
 
-		public object Clone()
-		{
-			using (MemoryStream ms = new MemoryStream())
-			{
-				BinaryFormatter bf = new BinaryFormatter();
-				bf.Serialize(ms, this);
+        public object Clone()
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                bf.Serialize(ms, this);
 
-				ms.Seek(0, SeekOrigin.Begin);
+                ms.Seek(0, SeekOrigin.Begin);
 
-				return bf.Deserialize(ms);
-			}
-		}
+                return bf.Deserialize(ms);
+            }
+        }
 
-		public string Location
-		{
-			get { return _location; }
-			set { _location = value; }
-		}
+        public string Location
+        {
+            get { return _location; }
+            set { _location = value; }
+        }
 
-		protected override bool SuppressBreakingChangesInChildren
-		{
-			get { return false; }
-		}
+        protected override bool SuppressBreakingChangesInChildren
+        {
+            get { return false; }
+        }
 
-		public override bool ExcludeFromReport
-		{
-			get { return true; }
-		}
+        public override bool ExcludeFromReport
+        {
+            get { return true; }
+        }
 
-		protected override string SerializeGetElementName()
-		{
-			return "Assembly";
-		}
+        protected override string SerializeGetElementName()
+        {
+            return "Assembly";
+        }
 
-		protected override void SerializeWriteRawContent(XmlWriter writer)
-		{
-			base.SerializeWriteRawContent(writer);
+        protected override void SerializeWriteRawContent(XmlWriter writer)
+        {
+            base.SerializeWriteRawContent(writer);
 
-			writer.WriteAttributeString("Location", _location);
-		}
+            writer.WriteAttributeString("Location", _location);
+        }
 
-		protected override void SerializeWriteContent(XmlWriter writer)
-		{
-			base.SerializeWriteContent(writer);
+        protected override void SerializeWriteContent(XmlWriter writer)
+        {
+            base.SerializeWriteContent(writer);
 
-			writer.WriteAttributeString("Location", _location);
-		}
+            writer.WriteAttributeString("Location", _location);
+        }
 
-		public override string ToString()
-		{
-			return _location;
-		}
-	}
+        public override string ToString()
+        {
+            return _location;
+        }
+    }
 }

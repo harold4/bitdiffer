@@ -4,37 +4,37 @@ using System.Text;
 
 namespace BitDiffer.Common.Model
 {
-	[Serializable]
-	public class ReferencesDetail : ParentDetail
-	{
-		public ReferencesDetail(RootDetail parent)
-			: base(parent, "References")
-		{
-		}
+    [Serializable]
+    public class ReferencesDetail : ParentDetail
+    {
+        public ReferencesDetail(RootDetail parent)
+            : base(parent, "References")
+        {
+        }
 
-		protected override void GetTextDescriptionBriefMembers(StringBuilder sb)
-		{
-			AppendClauseText(sb, "Assembly references changed");
-		}
+        protected override void GetTextDescriptionBriefMembers(StringBuilder sb)
+        {
+            AppendClauseText(sb, "Assembly references changed");
+        }
 
-		protected override void GetHtmlChangeDescriptionBriefMembers(StringBuilder sb)
-		{
-			AppendClauseHtml(sb, false, "Assembly references changed");
-		}
+        protected override void GetHtmlChangeDescriptionBriefMembers(StringBuilder sb)
+        {
+            AppendClauseHtml(sb, false, "Assembly references changed");
+        }
 
-		protected override void GetMarkdownDescriptionBriefMembers(StringBuilder sb)
-		{
-			AppendClauseMarkdown(sb, "Assembly references changed");
-		}
-		
-		protected override int RelativeSortOrder
-		{
-			get { return -6; }
-		}
+        protected override void GetMarkdownDescriptionBriefMembers(StringBuilder sb)
+        {
+            AppendClauseMarkdown(sb, "Assembly references changed");
+        }
 
-		protected override string SerializeGetElementName()
-		{
-			return "References";
-		}
-	}
+        protected override int RelativeSortOrder
+        {
+            get { return -6; }
+        }
+
+        protected override string SerializeGetElementName()
+        {
+            return "References";
+        }
+    }
 }

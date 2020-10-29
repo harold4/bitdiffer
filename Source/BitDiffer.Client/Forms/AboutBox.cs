@@ -13,22 +13,22 @@ using System.Diagnostics;
 
 namespace BitDiffer.Client.Forms
 {
-	public partial class AboutBox : Form
-	{
-		public AboutBox()
-		{
-			InitializeComponent();
+    public partial class AboutBox : Form
+    {
+        public AboutBox()
+        {
+            InitializeComponent();
 
-			if (LicenseManager.UsageMode == LicenseUsageMode.Runtime)
-			{
-				this.Icon = Resources.App;
-			}
-		}
+            if (LicenseManager.UsageMode == LicenseUsageMode.Runtime)
+            {
+                this.Icon = Resources.App;
+            }
+        }
 
-		private void btnOK_Click(object sender, EventArgs e)
-		{
-			this.Close();
-		}
-	}
+        private void btnOK_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+    }
 }
 

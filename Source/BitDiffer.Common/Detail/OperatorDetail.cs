@@ -10,22 +10,22 @@ using BitDiffer.Common.Misc;
 
 namespace BitDiffer.Common.Model
 {
-	[Serializable]
-	public class OperatorDetail : MethodDetail
-	{
-		public OperatorDetail()
-		{
-		}
+    [Serializable]
+    public class OperatorDetail : MethodDetail
+    {
+        public OperatorDetail()
+        {
+        }
 
-		public OperatorDetail(RootDetail parent, MethodBase mi)
-			: base(parent, mi)
-		{
-			_category = "operator";
-		}
+        public OperatorDetail(RootDetail parent, MethodBase mi)
+            : base(parent, mi)
+        {
+            _category = "operator";
+        }
 
-		protected override string SerializeGetElementName()
-		{
-			return "Operator";
-		}
-	}
+        protected override string SerializeGetElementName()
+        {
+            return "Operator";
+        }
+    }
 }

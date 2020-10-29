@@ -10,103 +10,103 @@ using BitDiffer.Common.Configuration;
 
 namespace BitDiffer.Common.Model
 {
-	[Serializable]
-	public class PropertyDetail : CodeDetail
-	{
-		public PropertyDetail()
-		{
-		}
+    [Serializable]
+    public class PropertyDetail : CodeDetail
+    {
+        public PropertyDetail()
+        {
+        }
 
-		public PropertyDetail(RootDetail parent, PropertyInfo pi)
-			: base(parent, pi)
-		{
-			_name = pi.Name;
-			_category = "property";
+        public PropertyDetail(RootDetail parent, PropertyInfo pi)
+            : base(parent, pi)
+        {
+            _name = pi.Name;
+            _category = "property";
 
-			MethodInfo[] methods = pi.GetAccessors(true);
-			foreach (MethodInfo mi in methods)
-			{
-				MethodDetail m = new MethodDetail(this, mi);
+            MethodInfo[] methods = pi.GetAccessors(true);
+            foreach (MethodInfo mi in methods)
+            {
+                MethodDetail m = new MethodDetail(this, mi);
 
-				if ((m.Name.Length > 3) && (mi.IsSpecialName))
-				{
-					m.Name = m.Name.Substring(0, 3);
-				}
+                if ((m.Name.Length > 3) && (mi.IsSpecialName))
+                {
+                    m.Name = m.Name.Substring(0, 3);
+                }
 
-				m.Declaration = null;
-				_children.Add(m);
-			}
+                m.Declaration = null;
+                _children.Add(m);
+            }
 
-			if (pi.GetIndexParameters().Length > 0)
-			{
-				CodeStringBuilder csbParameters = new CodeStringBuilder(AppendMode.Text);
+            if (pi.GetIndexParameters().Length > 0)
+            {
+                CodeStringBuilder csbParameters = new CodeStringBuilder(AppendMode.Text);
 
-				foreach (ParameterInfo ip in pi.GetIndexParameters())
-				{
-					csbParameters.AppendParameterType(ip);
-					csbParameters.AppendText(", ");
+                foreach (ParameterInfo ip in pi.GetIndexParameters())
+                {
+                    csbParameters.AppendParameterType(ip);
+                    csbParameters.AppendText(", ");
 
-					_parameterCount++;
-				}
+                    _parameterCount++;
+                }
 
-				csbParameters.RemoveCharsFromEnd(2);
+                csbParameters.RemoveCharsFromEnd(2);
 
-				_parameterTypesList = csbParameters.ToString();
-			}
+                _parameterTypesList = csbParameters.ToString();
+            }
 
-			_visibility = VisibilityUtil.GetMostVisible(FilterChildren<MethodDetail>());
+            _visibility = VisibilityUtil.GetMostVisible(FilterChildren<MethodDetail>());
 
-			CodeStringBuilder csb = new CodeStringBuilder();
+            CodeStringBuilder csb = new CodeStringBuilder();
 
-			AppendAttributesDeclaration(csb);
+            AppendAttributesDeclaration(csb);
 
-			csb.Mode = AppendMode.NonText;
-			csb.AppendVisibility(_visibility);
-			csb.AppendText(" ");
-			csb.Mode = AppendMode.All;
+            csb.Mode = AppendMode.NonText;
+            csb.AppendVisibility(_visibility);
+            csb.AppendText(" ");
+            csb.Mode = AppendMode.All;
 
-			csb.AppendType(pi.PropertyType);
-			csb.AppendText(" ");
-			csb.AppendText(pi.Name);
+            csb.AppendType(pi.PropertyType);
+            csb.AppendText(" ");
+            csb.AppendText(pi.Name);
 
-			if (this.ParameterCount > 0)
-			{
-				csb.AppendText("[");
-				csb.AppendText(this.ParameterTypesList);
-				csb.AppendText("]");
-			}
+            if (this.ParameterCount > 0)
+            {
+                csb.AppendText("[");
+                csb.AppendText(this.ParameterTypesList);
+                csb.AppendText("]");
+            }
 
-			csb.Mode = AppendMode.NonText;
+            csb.Mode = AppendMode.NonText;
 
-			csb.AppendText(" { ");
+            csb.AppendText(" { ");
 
-			foreach (MethodDetail mi in FilterChildren<MethodDetail>())
-			{
-				if (mi.Visibility != _visibility)
-				{
-					csb.AppendVisibility(mi.Visibility);
-					csb.AppendText(" ");
-				}
+            foreach (MethodDetail mi in FilterChildren<MethodDetail>())
+            {
+                if (mi.Visibility != _visibility)
+                {
+                    csb.AppendVisibility(mi.Visibility);
+                    csb.AppendText(" ");
+                }
 
-				csb.AppendKeyword(mi.Name);
-				csb.AppendText("; ");
-			}
+                csb.AppendKeyword(mi.Name);
+                csb.AppendText("; ");
+            }
 
-			csb.AppendText("}");
+            csb.AppendText("}");
 
-			_declaration = csb.ToString();
-			_declarationHtml = csb.ToHtmlString();
-			_declarationMarkdown = csb.ToMarkdownString();
-		}
+            _declaration = csb.ToString();
+            _declarationHtml = csb.ToHtmlString();
+            _declarationMarkdown = csb.ToMarkdownString();
+        }
 
-		public override bool CollapseChildren
-		{
-			get { return true; }
-		}
+        public override bool CollapseChildren
+        {
+            get { return true; }
+        }
 
-		protected override string SerializeGetElementName()
-		{
-			return "Property";
-		}
-	}
+        protected override string SerializeGetElementName()
+        {
+            return "Property";
+        }
+    }
 }

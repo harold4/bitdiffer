@@ -10,28 +10,28 @@ using System.Runtime.InteropServices;
 
 namespace BitDiffer.Client
 {
-	// TestUser
-	// 584514ce14ee40fd6a49b54dd73e9719e83e6e18
+    // TestUser
+    // 584514ce14ee40fd6a49b54dd73e9719e83e6e18
 
-	static class Program
-	{
-		public static bool IsRuntime;
-		public static string HelpFile;
+    static class Program
+    {
+        public static bool IsRuntime;
+        public static string HelpFile;
 
-		/// <summary>
-		/// The main entry point for the application.
-		/// </summary>
-		[STAThread]
-		static void Main()
-		{
-			IsRuntime = LicenseManager.UsageMode == LicenseUsageMode.Runtime;
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
+        {
+            IsRuntime = LicenseManager.UsageMode == LicenseUsageMode.Runtime;
 
-		    DisableWebBrowserClickSound();
+            DisableWebBrowserClickSound();
 
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new Forms.MainFrm());
-		}
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Forms.MainFrm());
+        }
 
         private static void DisableWebBrowserClickSound()
         {
@@ -59,5 +59,5 @@ namespace BitDiffer.Client
         [PreserveSig]
         [return:MarshalAs(UnmanagedType.Error)]
         static extern int CoInternetSetFeatureEnabled(int FeatureEntry, [MarshalAs(UnmanagedType.U4)] int dwFlags, bool fEnable);
-	}
+    }
 }

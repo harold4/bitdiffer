@@ -22,7 +22,7 @@ namespace BitDiffer.Client.Controls
                 this.RowHeadersVisible = false;
                 this.AllowUserToResizeRows = false;
                 this.AllowUserToResizeColumns = false;
-				this.GridColor = Color.FromKnownColor(KnownColor.ControlLight);
+                this.GridColor = Color.FromKnownColor(KnownColor.ControlLight);
 
                 DataGridViewImageColumn imageColumn = new DataGridViewImageColumn(false);
                 imageColumn.Width = 20;
@@ -94,20 +94,20 @@ namespace BitDiffer.Client.Controls
                     fd.CheckFileExists = true;
                     fd.Filter = "Assembly Files (*.exe, *.dll, *.winmd)|*.exe;*.dll;*.winmd|All Files (*.*)|*.*";
 
-					if (e.RowIndex == this.NewRowIndex)
-					{
-						string lastSelected = UserPrefs.LastSelectedAssemblyFolder;
+                    if (e.RowIndex == this.NewRowIndex)
+                    {
+                        string lastSelected = UserPrefs.LastSelectedAssemblyFolder;
 
-						if (!string.IsNullOrEmpty(lastSelected))
-						{
-							fd.InitialDirectory = Path.GetDirectoryName(lastSelected);
-						}
-						else
-						{
-							fd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-						}
-					}
-					else
+                        if (!string.IsNullOrEmpty(lastSelected))
+                        {
+                            fd.InitialDirectory = Path.GetDirectoryName(lastSelected);
+                        }
+                        else
+                        {
+                            fd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                        }
+                    }
+                    else
                     {
                         fd.FileName = this[1, e.RowIndex].Value.ToString();
                     }
@@ -117,7 +117,7 @@ namespace BitDiffer.Client.Controls
                         return;
                     }
 
-					UserPrefs.LastSelectedAssemblyFolder = fd.FileName;
+                    UserPrefs.LastSelectedAssemblyFolder = fd.FileName;
                     value = fd.FileName;
                 }
                 else
@@ -126,16 +126,16 @@ namespace BitDiffer.Client.Controls
                     fbd.Description = "Select Folder";
                     fbd.ShowNewFolderButton = false;
 
-					if (e.RowIndex == this.NewRowIndex)
-					{
-						string lastSelected = UserPrefs.LastSelectedAssemblyFolder;
+                    if (e.RowIndex == this.NewRowIndex)
+                    {
+                        string lastSelected = UserPrefs.LastSelectedAssemblyFolder;
 
-						if (!string.IsNullOrEmpty(lastSelected))
-						{
-							fbd.SelectedPath = Path.GetDirectoryName(lastSelected);
-						}
-					}
-					else
+                        if (!string.IsNullOrEmpty(lastSelected))
+                        {
+                            fbd.SelectedPath = Path.GetDirectoryName(lastSelected);
+                        }
+                    }
+                    else
                     {
                         fbd.SelectedPath = this[1, e.RowIndex].Value.ToString();
                     }
@@ -145,7 +145,7 @@ namespace BitDiffer.Client.Controls
                         return;
                     }
 
-					UserPrefs.LastSelectedAssemblyFolder = fbd.SelectedPath;
+                    UserPrefs.LastSelectedAssemblyFolder = fbd.SelectedPath;
                     value = fbd.SelectedPath;
                 }
 
@@ -158,7 +158,7 @@ namespace BitDiffer.Client.Controls
                     this[1, e.RowIndex].Value = value;
                 }
 
-				this.CurrentCell = this[1, e.RowIndex];
+                this.CurrentCell = this[1, e.RowIndex];
             }
         }
 
@@ -175,12 +175,12 @@ namespace BitDiffer.Client.Controls
             {
                 _itemType = value;
 
-				if (Program.IsRuntime)
-				{
-					((DataGridViewImageColumn)Columns[0]).Image = (value == FileSystemItemType.File) ? Resources.browse_document : Resources.browse_folder;
-					this.Rows.Clear();
-					this.CurrentCell = this[1, 0];
-				}
+                if (Program.IsRuntime)
+                {
+                    ((DataGridViewImageColumn)Columns[0]).Image = (value == FileSystemItemType.File) ? Resources.browse_document : Resources.browse_folder;
+                    this.Rows.Clear();
+                    this.CurrentCell = this[1, 0];
+                }
             }
         }
 

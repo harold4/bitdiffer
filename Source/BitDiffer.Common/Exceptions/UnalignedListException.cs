@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BitDiffer.Common.Exceptions
 {
-	public class UnalignedListException : Exception
-	{
-	}
+    public class UnalignedListException : Exception
+    {
+    }
 }

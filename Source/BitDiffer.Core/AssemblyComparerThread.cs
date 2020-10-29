@@ -9,39 +9,39 @@ using BitDiffer.Common.Utility;
 
 namespace BitDiffer.Core
 {
-	internal class AssemblyComparerThread
-	{
-		private AssemblyManager _manager;
-		private AssemblyGroup _group;
-		private string _fileName;
-		private IHandleProgress _progress;
+    internal class AssemblyComparerThread
+    {
+        private AssemblyManager _manager;
+        private AssemblyGroup _group;
+        private string _fileName;
+        private IHandleProgress _progress;
 
-		public AssemblyComparerThread(AssemblyManager manager, AssemblyGroup group, string fileName, IHandleProgress progress)
-		{
-			_manager = manager;
-			_group = group;
-			_fileName = fileName;
-			_progress = progress;
-		}
+        public AssemblyComparerThread(AssemblyManager manager, AssemblyGroup group, string fileName, IHandleProgress progress)
+        {
+            _manager = manager;
+            _group = group;
+            _fileName = fileName;
+            _progress = progress;
+        }
 
-		public AssemblyManager Manager
-		{
-			get { return _manager; }
-		}
+        public AssemblyManager Manager
+        {
+            get { return _manager; }
+        }
 
-		public AssemblyGroup Group
-		{
-			get { return _group; }
-		}
+        public AssemblyGroup Group
+        {
+            get { return _group; }
+        }
 
-		public string FileName
-		{
-			get { return _fileName; }
-		}
+        public string FileName
+        {
+            get { return _fileName; }
+        }
 
-		public IHandleProgress Progress
-		{
-			get { return _progress; }
-		}
-	}
+        public IHandleProgress Progress
+        {
+            get { return _progress; }
+        }
+    }
 }

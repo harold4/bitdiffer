@@ -5,22 +5,22 @@ using System.Xml.Serialization;
 
 namespace BitDiffer.Common.Configuration
 {
-	public class ComparisonFilter
-	{
-	    private bool _includePublic = true;
+    public class ComparisonFilter
+    {
+        private bool _includePublic = true;
         private bool _includePrivate = true;
         private bool _includeProtected = true;
         private bool _includeInternal = true;
         private bool _changedItemsOnly;
-		private bool _ignoreAssemblyAttributeChanges;
-		private bool _compareMethodImplementations = true;
-		private string _textFilter;
-		public static ComparisonFilter Default = new ComparisonFilter();
+        private bool _ignoreAssemblyAttributeChanges;
+        private bool _compareMethodImplementations = true;
+        private string _textFilter;
+        public static ComparisonFilter Default = new ComparisonFilter();
 
-		[XmlAttribute("PublicTypesOnly")]
-		public bool PublicTypesOnly_Obsolete
-		{
-			get { return false; }
+        [XmlAttribute("PublicTypesOnly")]
+        public bool PublicTypesOnly_Obsolete
+        {
+            get { return false; }
             set
             {
                 if (value)
@@ -31,14 +31,14 @@ namespace BitDiffer.Common.Configuration
                     _includeInternal = false;
                 }
             }
-		}
+        }
 
         [XmlAttribute]
         public bool IncludePublic
-	    {
-	        get { return _includePublic;}
+        {
+            get { return _includePublic;}
             set { _includePublic = value; }
-	    }
+        }
 
         [XmlAttribute]
         public bool IncludeProtected
@@ -62,31 +62,31 @@ namespace BitDiffer.Common.Configuration
         }
 
         [XmlAttribute]
-		public bool ChangedItemsOnly
-		{
-			get { return _changedItemsOnly; }
-			set { _changedItemsOnly = value; }
-		}
+        public bool ChangedItemsOnly
+        {
+            get { return _changedItemsOnly; }
+            set { _changedItemsOnly = value; }
+        }
 
-		[XmlAttribute]
-		public bool IgnoreAssemblyAttributeChanges
-		{
-			get { return _ignoreAssemblyAttributeChanges; }
-			set { _ignoreAssemblyAttributeChanges = value; }
-		}
+        [XmlAttribute]
+        public bool IgnoreAssemblyAttributeChanges
+        {
+            get { return _ignoreAssemblyAttributeChanges; }
+            set { _ignoreAssemblyAttributeChanges = value; }
+        }
 
-		[XmlAttribute]
-		public bool CompareMethodImplementations
-		{
-			get { return _compareMethodImplementations; }
-			set { _compareMethodImplementations = value; }
-		}
+        [XmlAttribute]
+        public bool CompareMethodImplementations
+        {
+            get { return _compareMethodImplementations; }
+            set { _compareMethodImplementations = value; }
+        }
 
-		[XmlAttribute]
-		public string TextFilter
-		{
-			get { return _textFilter; }
-			set { _textFilter = value; }
-		}
-	}
+        [XmlAttribute]
+        public string TextFilter
+        {
+            get { return _textFilter; }
+            set { _textFilter = value; }
+        }
+    }
 }

@@ -112,7 +112,7 @@ namespace BitDiffer.Common.Utility
                         _writer.Write(ReadDouble());
                         break;
                     case OperandType.InlineString:
-						int value = ReadInt32();
+                        int value = ReadInt32();
                         _writer.Write(_method.Module.ResolveString(value));
                         break;
                     case OperandType.InlineSwitch:
@@ -139,7 +139,7 @@ namespace BitDiffer.Common.Utility
                         _writer.Write(ReadByte());
                         break;
                     default:
-						throw new InvalidProgramException("Unknown IL instruction");
+                        throw new InvalidProgramException("Unknown IL instruction");
                 }
             }
         }
@@ -182,34 +182,34 @@ namespace BitDiffer.Common.Utility
             }
         }
 
-		private string GetNameForTok(int token)
-		{
-			try
-			{
-				return GetNameForType(token);
-			}
-			catch
-			{
-			}
+        private string GetNameForTok(int token)
+        {
+            try
+            {
+                return GetNameForType(token);
+            }
+            catch
+            {
+            }
 
-			try
-			{
-				return GetNameForMethod(token);
-			}
-			catch
-			{
-			}
+            try
+            {
+                return GetNameForMethod(token);
+            }
+            catch
+            {
+            }
 
-			try
-			{
-				return GetNameForField(token);
-			}
-			catch
-			{
-			}
+            try
+            {
+                return GetNameForField(token);
+            }
+            catch
+            {
+            }
 
-			throw new ArgumentException("Unable to parse inline tok " + token.ToString());
-		}
+            throw new ArgumentException("Unable to parse inline tok " + token.ToString());
+        }
 
         private string GetNameForType(int token)
         {
@@ -219,15 +219,15 @@ namespace BitDiffer.Common.Utility
             }
             else if (_method is ConstructorInfo)
             {
-	            var member = _method.Module.ResolveMember(token, _method.DeclaringType.GetGenericArguments(), null);
-	            if (member is Type type)
-	            {
-		            return GetNameForType(type);
-	            }
-	            else
-	            {
-		            return GetNameForMember(member);
-	            }
+                var member = _method.Module.ResolveMember(token, _method.DeclaringType.GetGenericArguments(), null);
+                if (member is Type type)
+                {
+                    return GetNameForType(type);
+                }
+                else
+                {
+                    return GetNameForMember(member);
+                }
             }
             else
             {
@@ -252,17 +252,17 @@ namespace BitDiffer.Common.Utility
 
         private string GetNameForType(Type type)
         {
-			// Dont use FullName... for generics it includes a version number in referenced types, and if that referenced version changes
-			// the output changes when it should not.
+            // Dont use FullName... for generics it includes a version number in referenced types, and if that referenced version changes
+            // the output changes when it should not.
 
-			if ((type.IsGenericType) && (type.DeclaringType != null))
-			{
-				return type.Name + ":" + type.DeclaringType.Name;
-			}
-			else
-			{
-				return type.Name;
-			}
+            if ((type.IsGenericType) && (type.DeclaringType != null))
+            {
+                return type.Name + ":" + type.DeclaringType.Name;
+            }
+            else
+            {
+                return type.Name;
+            }
         }
     }
 }

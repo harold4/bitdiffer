@@ -8,13 +8,13 @@ using BitDiffer.Common.Configuration;
 
 namespace BitDiffer.Common.Interfaces
 {
-	public interface ICanCompare : ICanAlign
-	{
-		ChangeType Change
-		{
-			get;
-		}
+    public interface ICanCompare : ICanAlign
+    {
+        ChangeType Change
+        {
+            get;
+        }
 
-		ChangeType PerformCompare(ICanCompare previous);
-	}
+        ChangeType PerformCompare(ICanCompare previous);
+    }
 }

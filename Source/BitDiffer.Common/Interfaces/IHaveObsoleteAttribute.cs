@@ -7,12 +7,12 @@ using BitDiffer.Common.Misc;
 
 namespace BitDiffer.Common.Interfaces
 {
-	public interface IHaveObsoleteAttribute
-	{
-		AttributeDetail ObsoleteAttribute
-		{
-			get;
-			set;
-		}
-	}
+    public interface IHaveObsoleteAttribute
+    {
+        AttributeDetail ObsoleteAttribute
+        {
+            get;
+            set;
+        }
+    }
 }

@@ -5,41 +5,41 @@ using System.Threading;
 
 namespace Aga.Controls.Threading
 {
-	public sealed class WorkItem
-	{
-		private WaitCallback _callback;
-		private object _state;
-		private ExecutionContext _ctx;
+    public sealed class WorkItem
+    {
+        private WaitCallback _callback;
+        private object _state;
+        private ExecutionContext _ctx;
 
-		internal WorkItem(WaitCallback wc, object state, ExecutionContext ctx)
-		{
-			_callback = wc; 
-			_state = state; 
-			_ctx = ctx;
-		}
+        internal WorkItem(WaitCallback wc, object state, ExecutionContext ctx)
+        {
+            _callback = wc;
+            _state = state;
+            _ctx = ctx;
+        }
 
-		internal WaitCallback Callback
-		{
-			get
-			{
-				return _callback;
-			}
-		}
+        internal WaitCallback Callback
+        {
+            get
+            {
+                return _callback;
+            }
+        }
 
-		internal object State
-		{
-			get
-			{
-				return _state;
-			}
-		}
+        internal object State
+        {
+            get
+            {
+                return _state;
+            }
+        }
 
-		internal ExecutionContext Context
-		{
-			get
-			{
-				return _ctx;
-			}
-		}
-	}
+        internal ExecutionContext Context
+        {
+            get
+            {
+                return _ctx;
+            }
+        }
+    }
 }

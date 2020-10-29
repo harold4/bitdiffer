@@ -12,30 +12,30 @@ using BitDiffer.Common.Utility;
 
 namespace BitDiffer.Client.Models
 {
-	public class AssemblyComparisonTreeItem : TreeItemBase
-	{
-		private AssemblyComparison _ac;
+    public class AssemblyComparisonTreeItem : TreeItemBase
+    {
+        private AssemblyComparison _ac;
 
-		public AssemblyComparisonTreeItem(AssemblyComparison ac)
-			: base(Resources.VSObject_Assembly)
-		{
-			_ac = ac;
-		}
+        public AssemblyComparisonTreeItem(AssemblyComparison ac)
+            : base(Resources.VSObject_Assembly)
+        {
+            _ac = ac;
+        }
 
-		public override string Name
-		{
-			get { return "Groups"; }
-		}
+        public override string Name
+        {
+            get { return "Groups"; }
+        }
 
-		public AssemblyComparison AssemblyComparison
-		{
-			get { return _ac; }
-			set { _ac = value; }
-		}
+        public AssemblyComparison AssemblyComparison
+        {
+            get { return _ac; }
+            set { _ac = value; }
+        }
 
-		public override ICanCompare GetItemAt(int assemblyIndex)
-		{
-			throw new Exception("The method or operation is not implemented.");
-		}
-	}
+        public override ICanCompare GetItemAt(int assemblyIndex)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+    }
 }

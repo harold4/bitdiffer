@@ -16,75 +16,75 @@ using BitDiffer.Common.Configuration;
 
 namespace BitDiffer.Core
 {
-	public abstract class AssemblyManager
-	{
-		private static int _domainID = 1;
-		private static string _extractorTypeName;
+    public abstract class AssemblyManager
+    {
+        private static int _domainID = 1;
+        private static string _extractorTypeName;
 
-		static AssemblyManager()
-		{
-			_extractorTypeName = new AssemblyExtractor().GetType().FullName; // Do it this way to work with obfuscator
-		}
+        static AssemblyManager()
+        {
+            _extractorTypeName = new AssemblyExtractor().GetType().FullName; // Do it this way to work with obfuscator
+        }
 
-		public AssemblyManager()
-		{
-		}
+        public AssemblyManager()
+        {
+        }
 
-		public AssemblyDetail ExtractAssemblyInf(string assemblyPath, DiffConfig config)
-		{
-			if (!Path.IsPathRooted(assemblyPath))
-			{
-				assemblyPath = Path.GetFullPath(assemblyPath);
-			}
+        public AssemblyDetail ExtractAssemblyInf(string assemblyPath, DiffConfig config)
+        {
+            if (!Path.IsPathRooted(assemblyPath))
+            {
+                assemblyPath = Path.GetFullPath(assemblyPath);
+            }
 
-			Log.Verbose("Extracting from assembly {0}", Path.GetFileName(assemblyPath));
+            Log.Verbose("Extracting from assembly {0}", Path.GetFileName(assemblyPath));
 
-			DomainExtractorPair pair = GetExtractor(assemblyPath);
-			AssemblyDetail ad = pair.Extractor.ExtractFrom(assemblyPath, config);
-			OneExtractionComplete(pair);
-			return ad;
-		}
+            DomainExtractorPair pair = GetExtractor(assemblyPath);
+            AssemblyDetail ad = pair.Extractor.ExtractFrom(assemblyPath, config);
+            OneExtractionComplete(pair);
+            return ad;
+        }
 
-		protected abstract DomainExtractorPair GetExtractor(string path);
+        protected abstract DomainExtractorPair GetExtractor(string path);
 
-		protected virtual void OneExtractionComplete(DomainExtractorPair pair)
-		{
-		}
+        protected virtual void OneExtractionComplete(DomainExtractorPair pair)
+        {
+        }
 
-		internal virtual void AllExtractionsComplete()
-		{
-		}
+        internal virtual void AllExtractionsComplete()
+        {
+        }
 
-		protected DomainExtractorPair GetExtractorInTempAppDomain(string assemblyPath)
-		{
-			AppDomainSetup setup = new AppDomainSetup();
-			setup.ApplicationBase = Path.GetDirectoryName(assemblyPath);
-			setup.ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
-			
-			Evidence evidence = new Evidence(AppDomain.CurrentDomain.Evidence);
+        protected DomainExtractorPair GetExtractorInTempAppDomain(string assemblyPath)
+        {
+            AppDomainSetup setup = new AppDomainSetup();
+            setup.ApplicationBase = Path.GetDirectoryName(assemblyPath);
+            setup.ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
 
-			Interlocked.Increment(ref _domainID);
+            Evidence evidence = new Evidence(AppDomain.CurrentDomain.Evidence);
 
-			string appDomainName = Constants.ExtractionDomainPrefix + " " + _domainID.ToString();
-			string typeName = new AssemblyExtractor().GetType().FullName; // Do it this way to work with obfuscator
-			string extractorPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "BitDiffer.Extractor.dll");
+            Interlocked.Increment(ref _domainID);
 
-			Log.Verbose("Creating {0}", appDomainName);
-			AppDomain domain = AppDomain.CreateDomain(appDomainName, evidence, setup);
-			AssemblyExtractor extractor = (AssemblyExtractor)domain.CreateInstanceFromAndUnwrap(extractorPath, _extractorTypeName);
+            string appDomainName = Constants.ExtractionDomainPrefix + " " + _domainID.ToString();
+            string typeName = new AssemblyExtractor().GetType().FullName; // Do it this way to work with obfuscator
+            string extractorPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "BitDiffer.Extractor.dll");
 
-			// When running in another app domain - need to copy the Visual Studio trace listeners over.
-			// This allows unit tests running in the other AppDomain to have their trace output displayed in the Visual Studio trace output.
-			// TraceListener is MarshalByRef so this is safe. 
-			foreach (TraceListener listener in Trace.Listeners)
-			{
-				if (listener.Name == "")
-				{
-					extractor.AddTraceListener(listener);
-				}
-			}
+            Log.Verbose("Creating {0}", appDomainName);
+            AppDomain domain = AppDomain.CreateDomain(appDomainName, evidence, setup);
+            AssemblyExtractor extractor = (AssemblyExtractor)domain.CreateInstanceFromAndUnwrap(extractorPath, _extractorTypeName);
 
-			return new DomainExtractorPair(domain, extractor);
-		}
-	}
+            // When running in another app domain - need to copy the Visual Studio trace listeners over.
+            // This allows unit tests running in the other AppDomain to have their trace output displayed in the Visual Studio trace output.
+            // TraceListener is MarshalByRef so this is safe.
+            foreach (TraceListener listener in Trace.Listeners)
+            {
+                if (listener.Name == "")
+                {
+                    extractor.AddTraceListener(listener);
+                }
+            }
+
+            return new DomainExtractorPair(domain, extractor);
+        }
+    }
 }

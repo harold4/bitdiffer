@@ -15,15 +15,15 @@ using BitDiffer.Common.Interfaces;
 
 namespace BitDiffer.Client.Controls
 {
-	public class ItemIconNodeControl : NodeIcon
-	{
-		public ItemIconNodeControl()
-		{
-		}
+    public class ItemIconNodeControl : NodeIcon
+    {
+        public ItemIconNodeControl()
+        {
+        }
 
-		protected override Image GetIcon(TreeNodeAdv node)
-		{
-			return ((TreeItemBase)node.Tag).Icon;
-		}
-	}
+        protected override Image GetIcon(TreeNodeAdv node)
+        {
+            return ((TreeItemBase)node.Tag).Icon;
+        }
+    }
 }
