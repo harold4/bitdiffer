@@ -1,50 +1,49 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
-using System.Threading;
+using BitDiffer.Common.Utility;
 
 namespace BitDiffer.Extractor.Costura
 {
-    internal static class AssemblyLoader
+    internal class AssemblyLoader
     {
-        private static object nullCacheLock = new object();
+        private readonly ConcurrentQueue<string> _deleteFileList;
+        private Assembly _executingAssembly;
 
-        private static Dictionary<string, bool> nullCache = new Dictionary<string, bool>();
+        private List<Item> _items;
 
-        private static Dictionary<string, string> assemblyNames = new Dictionary<string, string>();
-
-        private static Dictionary<string, string> symbolNames = new Dictionary<string, string>();
-
-        private static int isAttached;
-
-        private static string CultureToString(CultureInfo culture)
+        public AssemblyLoader(Assembly executingAssembly, ConcurrentQueue<string> deleteFileList)
         {
-            if (culture == null)
+            _executingAssembly = executingAssembly;
+            _deleteFileList = deleteFileList;
+            var items = new List<Item>();
+            var names = _executingAssembly.GetManifestResourceNames();
+            foreach (var fullname in names)
             {
-                return "";
-            }
-            return culture.Name;
-        }
-
-        private static Assembly ReadExistingAssembly(AssemblyName name)
-        {
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            foreach (Assembly assembly in assemblies)
-            {
-                AssemblyName name2 = assembly.GetName();
-                if (string.Equals(name2.Name, name.Name, StringComparison.InvariantCultureIgnoreCase) &&
-                    string.Equals(CultureToString(name2.CultureInfo), CultureToString(name.CultureInfo), StringComparison.InvariantCultureIgnoreCase))
+                if (fullname.StartsWith("costura.", StringComparison.Ordinal) && fullname.EndsWith(".compressed", StringComparison.Ordinal))
                 {
-                    return assembly;
+                    var name = fullname.Substring(8, fullname.Length - 8 - 11);
+                    if (!name.EndsWith(".dll", StringComparison.Ordinal)) continue;
+
+                    name = name.Substring(0, name.Length - 4);
+                    items.Add(new Item(this, name, fullname));
                 }
             }
-            return null;
+            _items = items;
         }
 
-        private static void CopyTo(Stream source, Stream destination)
+        public void CreateDlls(string assemblyDirectory)
+        {
+            foreach (var item in _items)
+            {
+                item.Save(assemblyDirectory);
+            }
+        }
+
+        private void CopyTo(Stream source, Stream destination)
         {
             byte[] array = new byte[81920];
             int count;
@@ -54,10 +53,10 @@ namespace BitDiffer.Extractor.Costura
             }
         }
 
-        private static Stream LoadStream(string fullName)
+        private Stream LoadStream(string fullName)
         {
-            Assembly executingAssembly = Assembly.GetExecutingAssembly();
-            if (fullName.EndsWith(".compressed"))
+            Assembly executingAssembly = _executingAssembly;
+            if (fullName.StartsWith("costura.", StringComparison.Ordinal) && fullName.EndsWith(".compressed", StringComparison.Ordinal))
             {
                 using (Stream stream = executingAssembly.GetManifestResourceStream(fullName))
                 {
@@ -73,117 +72,76 @@ namespace BitDiffer.Extractor.Costura
             return executingAssembly.GetManifestResourceStream(fullName);
         }
 
-        private static Stream LoadStream(Dictionary<string, string> resourceNames, string name)
-        {
-            if (resourceNames.TryGetValue(name, out string value))
-            {
-                return LoadStream(value);
-            }
-            return null;
-        }
-
-        private static byte[] ReadStream(Stream stream)
+        private byte[] ReadStream(Stream stream)
         {
             byte[] array = new byte[stream.Length];
             stream.Read(array, 0, array.Length);
             return array;
         }
 
-        private static Assembly ReadFromEmbeddedResources(Dictionary<string, string> assemblyNames, Dictionary<string, string> symbolNames,
-            AssemblyName requestedAssemblyName)
-        {
-            string text = requestedAssemblyName.Name.ToLowerInvariant();
-            if (requestedAssemblyName.CultureInfo != null && !string.IsNullOrEmpty(requestedAssemblyName.CultureInfo.Name))
-            {
-                text = requestedAssemblyName.CultureInfo.Name + "." + text;
-            }
-            byte[] rawAssembly;
-            using (Stream stream = LoadStream(assemblyNames, text))
-            {
-                if (stream == null)
-                {
-                    return null;
-                }
-                rawAssembly = ReadStream(stream);
-            }
-            using (Stream stream2 = LoadStream(symbolNames, text))
-            {
-                if (stream2 != null)
-                {
-                    byte[] rawSymbolStore = ReadStream(stream2);
-                    return Assembly.Load(rawAssembly, rawSymbolStore);
-                }
-            }
-            return Assembly.Load(rawAssembly);
-        }
+        // private Assembly ReadFromEmbeddedResources(Dictionary<string, string> assemblyNames, Dictionary<string, string> symbolNames,
+        //     AssemblyName requestedAssemblyName)
+        // {
+        //     Log.Info($"   ReadFromEmbeddedResources: {requestedAssemblyName}");
+        //     string text = requestedAssemblyName.Name.ToLowerInvariant();
+        //     if (requestedAssemblyName.CultureInfo != null && !string.IsNullOrEmpty(requestedAssemblyName.CultureInfo.Name))
+        //     {
+        //         text = requestedAssemblyName.CultureInfo.Name + "." + text;
+        //     }
+        //     byte[] rawAssembly;
+        //     using (Stream stream = LoadStream(assemblyNames, text))
+        //     {
+        //         if (stream == null)
+        //         {
+        //             return null;
+        //         }
+        //         rawAssembly = ReadStream(stream);
+        //     }
+        //     using (Stream stream2 = LoadStream(symbolNames, text))
+        //     {
+        //         Log.Info($"   ReadFromEmbeddedResources: {text}: {stream2}");
+        //         if (stream2 != null)
+        //         {
+        //             byte[] rawSymbolStore = ReadStream(stream2);
+        //             return _reflectionOnly ? Assembly.ReflectionOnlyLoad(rawAssembly) : Assembly.Load(rawAssembly, rawSymbolStore);
+        //         }
+        //     }
+        //     return _reflectionOnly ? Assembly.ReflectionOnlyLoad(rawAssembly) : Assembly.Load(rawAssembly);
+        // }
 
-        public static Assembly ResolveAssembly(object sender, ResolveEventArgs e)
-        {
-            lock (nullCacheLock)
-            {
-                if (nullCache.ContainsKey(e.Name))
-                {
-                    return null;
-                }
-            }
-            AssemblyName assemblyName = new AssemblyName(e.Name);
-            Assembly assembly = ReadExistingAssembly(assemblyName);
-            if (assembly != null)
-            {
-                return assembly;
-            }
-            assembly = ReadFromEmbeddedResources(assemblyNames, symbolNames, assemblyName);
-            if (assembly == null)
-            {
-                lock (nullCacheLock)
-                {
-                    nullCache[e.Name] = true;
-                }
-                if ((assemblyName.Flags & AssemblyNameFlags.Retargetable) != 0)
-                {
-                    assembly = Assembly.Load(assemblyName);
-                }
-            }
-            return assembly;
-        }
 
-        static AssemblyLoader()
+        class Item
         {
-        }
+            private readonly AssemblyLoader _assemblyLoader;
 
-        public static void Attach()
-        {
-            if (Interlocked.Exchange(ref isAttached, 1) != 1)
+            public Item(AssemblyLoader assemblyLoader, string assemblyName, string resourceName)
             {
-                AppDomain.CurrentDomain.AssemblyResolve += delegate(object sender, ResolveEventArgs e)
+                _assemblyLoader = assemblyLoader;
+                AssemblyName = assemblyName;
+                ResourceName = resourceName;
+            }
+
+            public string AssemblyName { get; }
+            public string ResourceName { get; }
+
+            public void Save(string directory)
+            {
+                using (var stream = _assemblyLoader.LoadStream(ResourceName))
                 {
-                    lock (nullCacheLock)
+                    if (stream == null)
                     {
-                        if (nullCache.ContainsKey(e.Name))
-                        {
-                            return null;
-                        }
+                        Log.Error($"Resource not found!?? {ResourceName}");
+                        return;
                     }
-                    AssemblyName assemblyName = new AssemblyName(e.Name);
-                    Assembly assembly = ReadExistingAssembly(assemblyName);
-                    if (assembly != null)
+                    var rawStream = _assemblyLoader.ReadStream(stream);
+                    var dllName = Path.Combine(directory, AssemblyName + ".dll");
+                    if (!File.Exists(dllName))
                     {
-                        return assembly;
+                        File.WriteAllBytes(dllName, rawStream);
+                        _assemblyLoader._deleteFileList.Enqueue(dllName);
                     }
-                    assembly = ReadFromEmbeddedResources(assemblyNames, symbolNames, assemblyName);
-                    if (assembly == null)
-                    {
-                        lock (nullCacheLock)
-                        {
-                            nullCache[e.Name] = true;
-                        }
-                        if ((assemblyName.Flags & AssemblyNameFlags.Retargetable) != 0)
-                        {
-                            assembly = Assembly.Load(assemblyName);
-                        }
-                    }
-                    return assembly;
-                };
+                    Log.Verbose($"Assembly temporary saved: {AssemblyName}");
+                }
             }
         }
     }

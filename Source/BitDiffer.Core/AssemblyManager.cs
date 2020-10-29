@@ -7,6 +7,7 @@ using System.Security.Policy;
 using System.Diagnostics;
 using System.Threading;
 using System.Collections;
+using System.Collections.Concurrent;
 
 using BitDiffer.Common.Model;
 using BitDiffer.Extractor;
@@ -39,9 +40,11 @@ namespace BitDiffer.Core
 
             Log.Verbose("Extracting from assembly {0}", Path.GetFileName(assemblyPath));
 
+            var deleteFiles = new ConcurrentQueue<string>();
             DomainExtractorPair pair = GetExtractor(assemblyPath);
-            AssemblyDetail ad = pair.Extractor.ExtractFrom(assemblyPath, config);
+            AssemblyDetail ad = pair.Extractor.ExtractFrom(assemblyPath, config, ref deleteFiles);
             OneExtractionComplete(pair);
+            OnUnloadDeleteFiles(deleteFiles);
             return ad;
         }
 
@@ -85,6 +88,28 @@ namespace BitDiffer.Core
             }
 
             return new DomainExtractorPair(domain, extractor);
+        }
+
+        // private static ConcurrentQueue<string> _deleteFiles = new ConcurrentQueue<string>();
+
+        // public static void AddDeleteFileOnUnload(string filePath)
+        // {
+        //     _deleteFiles.Enqueue(filePath);
+        // }
+        private void OnUnloadDeleteFiles(ConcurrentQueue<string> deleteFiles)
+        {
+            while (deleteFiles.TryDequeue(out string deleteFile))
+            {
+                try
+                {
+                    File.Delete(deleteFile);
+                    Log.Info("Deleted "+deleteFile);
+                }
+                catch (Exception e)
+                {
+                    Log.Warn($"Delete failed: {deleteFile}. {e.Message}");
+                }
+            }
         }
     }
 }

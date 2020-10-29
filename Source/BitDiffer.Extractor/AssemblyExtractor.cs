@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ using BitDiffer.Common.Utility;
 using BitDiffer.Common.Misc;
 using BitDiffer.Common.Configuration;
 using System.Runtime.InteropServices.WindowsRuntime;
+using BitDiffer.Extractor.Costura;
 
 namespace BitDiffer.Extractor
 {
@@ -27,7 +29,7 @@ namespace BitDiffer.Extractor
             }
         }
 
-        public AssemblyDetail ExtractFrom(string assemblyFile, DiffConfig config)
+        public AssemblyDetail ExtractFrom(string assemblyFile, DiffConfig config, ref ConcurrentQueue<string> deleteFileList)
         {
 
             Assembly assembly;
@@ -51,7 +53,8 @@ namespace BitDiffer.Extractor
                     Log.Info("Loading assembly {0}", assemblyFile);
                     assembly = Assembly.LoadFrom(assemblyFile);
                 }
-
+                var loader = new AssemblyLoader(assembly, deleteFileList);
+                loader.CreateDlls(Path.GetDirectoryName(Path.GetFullPath(assemblyFile)));
                 return new AssemblyDetail(assembly);
             }
             catch (Exception ex)
