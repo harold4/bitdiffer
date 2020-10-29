@@ -5,30 +5,30 @@ using System.Drawing;
 
 namespace Aga.Controls.Tree
 {
-	internal interface IRowLayout
-	{
-		int PreferredRowHeight
-		{
-			get;
-			set;
-		}
+    internal interface IRowLayout
+    {
+        int PreferredRowHeight
+        {
+            get;
+            set;
+        }
 
-		int PageRowCount
-		{
-			get;
-		}
+        int PageRowCount
+        {
+            get;
+        }
 
-		int CurrentPageSize
-		{
-			get;
-		}
+        int CurrentPageSize
+        {
+            get;
+        }
 
-		Rectangle GetRowBounds(int rowNo);
+        Rectangle GetRowBounds(int rowNo);
 
-		int GetRowAt(Point point);
+        int GetRowAt(Point point);
 
-		int GetFirstRow(int lastPageRow);
+        int GetFirstRow(int lastPageRow);
 
-		void ClearCache();
-	}
+        void ClearCache();
+    }
 }

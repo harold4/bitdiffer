@@ -5,15 +5,15 @@ using System.Reflection;
 
 namespace BitDiffer.Common.Misc
 {
-	public enum Visibility
-	{
-		Invalid,
-		Private,
-		ProtectedPrivate,
-		Internal,
-		Protected,
-		ProtectedInternal,
-		Exported,
-		Public
-	};
+    public enum Visibility
+    {
+        Invalid,
+        Private,
+        ProtectedPrivate,
+        Internal,
+        Protected,
+        ProtectedInternal,
+        Exported,
+        Public
+    };
 }

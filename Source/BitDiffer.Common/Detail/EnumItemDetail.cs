@@ -10,60 +10,60 @@ using BitDiffer.Common.Utility;
 
 namespace BitDiffer.Common.Model
 {
-	[Serializable]
-	public class EnumItemDetail : MemberDetail
-	{
-		private long _value;
+    [Serializable]
+    public class EnumItemDetail : MemberDetail
+    {
+        private long _value;
 
-		public EnumItemDetail()
-		{
-		}
+        public EnumItemDetail()
+        {
+        }
 
-		public EnumItemDetail(RootDetail parent, string name, long value, Visibility visibility)
-		{
-			_name = name;
-			_parent = parent;
-			_value = value;
-			_visibility = visibility;
-			_category = "enum value";
+        public EnumItemDetail(RootDetail parent, string name, long value, Visibility visibility)
+        {
+            _name = name;
+            _parent = parent;
+            _value = value;
+            _visibility = visibility;
+            _category = "enum value";
 
-			CodeStringBuilder csb = new CodeStringBuilder();
+            CodeStringBuilder csb = new CodeStringBuilder();
 
-			AppendAttributesDeclaration(csb);
+            AppendAttributesDeclaration(csb);
 
-			csb.AppendText(name);
-			csb.AppendText(" = ");
-			csb.AppendText(value.ToString());
+            csb.AppendText(name);
+            csb.AppendText(" = ");
+            csb.AppendText(value.ToString());
 
-			_declaration = csb.ToString();
-			_declarationHtml = csb.ToHtmlString();
-			_declarationMarkdown = csb.ToMarkdownString();
-		}
+            _declaration = csb.ToString();
+            _declarationHtml = csb.ToHtmlString();
+            _declarationMarkdown = csb.ToMarkdownString();
+        }
 
-		protected override ChangeType CompareInstance(ICanCompare previous, bool suppressBreakingChanges)
-		{
-			ChangeType change = ChangeType.None;
+        protected override ChangeType CompareInstance(ICanCompare previous, bool suppressBreakingChanges)
+        {
+            ChangeType change = ChangeType.None;
 
-			EnumItemDetail other = (EnumItemDetail)previous;
+            EnumItemDetail other = (EnumItemDetail)previous;
 
-			if (_value != other._value)
-			{
-				if ((!suppressBreakingChanges) && (_visibility == Visibility.Public && other._visibility == Visibility.Public))
-				{
-					change |= ChangeType.ValueChangedBreaking;
-				}
-				else
-				{
-					change |= ChangeType.ValueChangedNonBreaking;
-				}
-			}
+            if (_value != other._value)
+            {
+                if ((!suppressBreakingChanges) && (_visibility == Visibility.Public && other._visibility == Visibility.Public))
+                {
+                    change |= ChangeType.ValueChangedBreaking;
+                }
+                else
+                {
+                    change |= ChangeType.ValueChangedNonBreaking;
+                }
+            }
 
-			return change;
-		}
+            return change;
+        }
 
-		protected override string SerializeGetElementName()
-		{
-			return "Item";
-		}
-	}
+        protected override string SerializeGetElementName()
+        {
+            return "Item";
+        }
+    }
 }

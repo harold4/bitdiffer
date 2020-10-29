@@ -8,20 +8,20 @@ using BitDiffer.Common.Misc;
 
 namespace BitDiffer.Common.Interfaces
 {
-	public interface ICanNavigate
-	{
-		ICanNavigate NavigateForward
-		{
-			get;
-			set;
-		}
+    public interface ICanNavigate
+    {
+        ICanNavigate NavigateForward
+        {
+            get;
+            set;
+        }
 
-		ICanNavigate NavigateBackward
-		{
-			get;
-			set;
-		}
+        ICanNavigate NavigateBackward
+        {
+            get;
+            set;
+        }
 
-		ICanNavigate NavigateForwardTo(int index);
-	}
+        ICanNavigate NavigateForwardTo(int index);
+    }
 }

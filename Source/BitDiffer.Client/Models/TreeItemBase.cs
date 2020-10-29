@@ -12,36 +12,36 @@ using BitDiffer.Common.Utility;
 
 namespace BitDiffer.Client.Models
 {
-	public abstract class TreeItemBase
-	{
-		private Bitmap _icon;
+    public abstract class TreeItemBase
+    {
+        private Bitmap _icon;
 
-		public TreeItemBase()
-		{
-		}
+        public TreeItemBase()
+        {
+        }
 
-		public TreeItemBase(Bitmap icon)
-		{
-			_icon = icon;
+        public TreeItemBase(Bitmap icon)
+        {
+            _icon = icon;
 
-			if (_icon != null)
-			{
-				_icon.MakeTransparent(_icon.GetPixel(0, 0));
-			}
-		}
+            if (_icon != null)
+            {
+                _icon.MakeTransparent(_icon.GetPixel(0, 0));
+            }
+        }
 
-		public Bitmap Icon
-		{
-			get { return _icon; }
-		}
+        public Bitmap Icon
+        {
+            get { return _icon; }
+        }
 
-		public virtual string Title
-		{
-			get { return this.Name; }
-		}
+        public virtual string Title
+        {
+            get { return this.Name; }
+        }
 
-		public abstract string Name { get; }
+        public abstract string Name { get; }
 
-		public abstract ICanCompare GetItemAt(int assemblyIndex);
-	}
+        public abstract ICanCompare GetItemAt(int assemblyIndex);
+    }
 }

@@ -4,27 +4,27 @@ using System.Text;
 
 namespace BitDiffer.Common.Model
 {
-	[Serializable]
-	public class ParentDetail : RootDetail
-	{
-		public ParentDetail()
-		{
-		}
+    [Serializable]
+    public class ParentDetail : RootDetail
+    {
+        public ParentDetail()
+        {
+        }
 
-		public ParentDetail(RootDetail parent, string name)
-			: base(parent, name)
-		{
-		}
+        public ParentDetail(RootDetail parent, string name)
+            : base(parent, name)
+        {
+        }
 
-		protected override bool SerializeShouldWriteName()
-		{
-			return false;
-		}
+        protected override bool SerializeShouldWriteName()
+        {
+            return false;
+        }
 
-		protected override bool FullNameRoot
-		{
-			get { return true; }
-		}
-	}
+        protected override bool FullNameRoot
+        {
+            get { return true; }
+        }
+    }
 }
 

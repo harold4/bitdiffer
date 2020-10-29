@@ -5,14 +5,14 @@ using System.ComponentModel;
 
 namespace BitDiffer.Tests.PublicNamespaceRemoved
 {
-	public class PublicClass
-	{
-	}
+    public class PublicClass
+    {
+    }
 }
 
 namespace BitDiffer.Tests.InternalNamespaceRemoved
 {
-	internal class InternalClass
-	{
-	}
+    internal class InternalClass
+    {
+    }
 }

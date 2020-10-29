@@ -12,91 +12,91 @@ using BitDiffer.Common.Configuration;
 
 namespace BitDiffer.Common.Model
 {
-	[Serializable]
-	public partial class TraitDetail : RootDetail
-	{
-		private string _value;
+    [Serializable]
+    public partial class TraitDetail : RootDetail
+    {
+        private string _value;
 
-		public TraitDetail()
-		{
-		}
+        public TraitDetail()
+        {
+        }
 
-		public TraitDetail(RootDetail parent, string name, string value)
-			: base(parent, name)
-		{
-			_value = value;
-		}
+        public TraitDetail(RootDetail parent, string name, string value)
+            : base(parent, name)
+        {
+            _value = value;
+        }
 
-		protected override bool FullNameRoot
-		{
-			get { return true; }
-		}
+        protected override bool FullNameRoot
+        {
+            get { return true; }
+        }
 
-		public override string ToString()
-		{
-			return _value;
-		}
+        public override string ToString()
+        {
+            return _value;
+        }
 
-		public override string GetTextSummary()
-		{
-			return _value;
-		}
+        public override string GetTextSummary()
+        {
+            return _value;
+        }
 
-		public override string GetHtmlDeclaration()
-		{
-			return _value;
-		}
+        public override string GetHtmlDeclaration()
+        {
+            return _value;
+        }
 
-		public override string GetMarkdownDeclaration()
-		{
-			return _value;
-		}
+        public override string GetMarkdownDeclaration()
+        {
+            return _value;
+        }
 
-		protected override ChangeType CompareInstance(ICanCompare previous, bool suppressBreakingChanges)
-		{
-			ChangeType change = base.CompareInstance(previous, suppressBreakingChanges);
+        protected override ChangeType CompareInstance(ICanCompare previous, bool suppressBreakingChanges)
+        {
+            ChangeType change = base.CompareInstance(previous, suppressBreakingChanges);
 
-			TraitDetail other = (TraitDetail)previous;
+            TraitDetail other = (TraitDetail)previous;
 
-			if (string.Compare(_value, other._value) != 0)
-			{
-				change |= ChangeType.ValueChangedNonBreaking;
-			}
+            if (string.Compare(_value, other._value) != 0)
+            {
+                change |= ChangeType.ValueChangedNonBreaking;
+            }
 
-			return change;
-		}
+            return change;
+        }
 
-		public string Value
-		{
-			get { return _value; }
-			set { _value = value; }
-		}
+        public string Value
+        {
+            get { return _value; }
+            set { _value = value; }
+        }
 
-		protected override void SerializeWriteRawContent(XmlWriter writer)
-		{
-			base.SerializeWriteRawContent(writer);
+        protected override void SerializeWriteRawContent(XmlWriter writer)
+        {
+            base.SerializeWriteRawContent(writer);
 
-			writer.WriteAttributeString("Value", _value);
-		}
+            writer.WriteAttributeString("Value", _value);
+        }
 
-		protected override string SerializeGetElementName()
-		{
-			return "AssemblyProperty";
-		}
+        protected override string SerializeGetElementName()
+        {
+            return "AssemblyProperty";
+        }
 
-		protected override int RelativeSortOrder
-		{
-			get { return -10; }
-		}
+        protected override int RelativeSortOrder
+        {
+            get { return -10; }
+        }
 
 
-		protected override bool ShouldWriteMarkdownSummaryForChange
-		{
-			get
-			{
-				// Trait: it's obviously a value change, don't report a non-breaking change.
-				return Change != ChangeType.ValueChangedNonBreaking && base.ShouldWriteMarkdownSummaryForChange;
-			}
-		}
-	}
+        protected override bool ShouldWriteMarkdownSummaryForChange
+        {
+            get
+            {
+                // Trait: it's obviously a value change, don't report a non-breaking change.
+                return Change != ChangeType.ValueChangedNonBreaking && base.ShouldWriteMarkdownSummaryForChange;
+            }
+        }
+    }
 }

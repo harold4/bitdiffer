@@ -66,6 +66,7 @@
       <Link>SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyExtractor.cs" />
+    <Compile Include="Costura\AssemblyLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

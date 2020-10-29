@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,61 +12,63 @@ using BitDiffer.Common.Utility;
 using BitDiffer.Common.Misc;
 using BitDiffer.Common.Configuration;
 using System.Runtime.InteropServices.WindowsRuntime;
+using BitDiffer.Extractor.Costura;
 
 namespace BitDiffer.Extractor
 {
-	public class AssemblyExtractor : MarshalByRefObject
-	{
-		private DiffConfig _config;
-		private string _assemblyFile;
+    public class AssemblyExtractor : MarshalByRefObject
+    {
+        private DiffConfig _config;
+        private string _assemblyFile;
 
-		static AssemblyExtractor()
-		{
-			if (AppDomain.CurrentDomain.FriendlyName.StartsWith(Constants.ExtractionDomainPrefix))
-			{
-				AppDomain.CurrentDomain.AssemblyResolve += domain_AssemblyResolve;
-			}
-		}
+        static AssemblyExtractor()
+        {
+            if (AppDomain.CurrentDomain.FriendlyName.StartsWith(Constants.ExtractionDomainPrefix))
+            {
+                AppDomain.CurrentDomain.AssemblyResolve += domain_AssemblyResolve;
+            }
+        }
 
-		public AssemblyDetail ExtractFrom(string assemblyFile, DiffConfig config)
-		{
-            
-			Assembly assembly;
+        public AssemblyDetail ExtractFrom(string assemblyFile, DiffConfig config, ref ConcurrentQueue<string> deleteFileList)
+        {
 
-			_assemblyFile = assemblyFile;
-			_config = config;
+            Assembly assembly;
+
+            _assemblyFile = assemblyFile;
+            _config = config;
 
             // Handle standard and .winmd resolve events
-			AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += CurrentDomain_ReflectionOnlyAssemblyResolve;
+            AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += CurrentDomain_ReflectionOnlyAssemblyResolve;
             WindowsRuntimeMetadata.ReflectionOnlyNamespaceResolve += WindowsRuntimeMetadata_ReflectionOnlyNamespaceResolve;
 
             try
-		    {
-		        if (config.UseReflectionOnlyContext)
-		        {
-		            Log.Info("Loading assembly {0} (ReflectionContext)", assemblyFile);
-		            assembly = Assembly.ReflectionOnlyLoadFrom(assemblyFile);
-		        }
-		        else
-		        {
-		            Log.Info("Loading assembly {0}", assemblyFile);
-		            assembly = Assembly.LoadFrom(assemblyFile);
-		        }
-
-		        return new AssemblyDetail(assembly);
-		    }
+            {
+                if (config.UseReflectionOnlyContext)
+                {
+                    Log.Info("Loading assembly {0} (ReflectionContext)", assemblyFile);
+                    assembly = Assembly.ReflectionOnlyLoadFrom(assemblyFile);
+                }
+                else
+                {
+                    Log.Info("Loading assembly {0}", assemblyFile);
+                    assembly = Assembly.LoadFrom(assemblyFile);
+                }
+                var loader = new AssemblyLoader(assembly, deleteFileList);
+                loader.CreateDlls(Path.GetDirectoryName(Path.GetFullPath(assemblyFile)));
+                return new AssemblyDetail(assembly);
+            }
             catch (Exception ex)
             {
                 var errMessage = ex.GetNestedExceptionMessage();
                 Log.Error(errMessage);
                 throw new Exception(errMessage);
-		    }
-			finally
-			{
-				AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve -= CurrentDomain_ReflectionOnlyAssemblyResolve;
+            }
+            finally
+            {
+                AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve -= CurrentDomain_ReflectionOnlyAssemblyResolve;
                 WindowsRuntimeMetadata.ReflectionOnlyNamespaceResolve -= WindowsRuntimeMetadata_ReflectionOnlyNamespaceResolve;
             }
-		}
+        }
 
         private void WindowsRuntimeMetadata_ReflectionOnlyNamespaceResolve(object sender, NamespaceResolveEventArgs e)
         {
@@ -112,19 +115,19 @@ namespace BitDiffer.Extractor
         }
 
         private Assembly CurrentDomain_ReflectionOnlyAssemblyResolve(object sender, ResolveEventArgs args)
-		{
-			Assembly assembly = null;
+        {
+            Assembly assembly = null;
 
-			Log.Verbose("Attempting to resolve assembly reference '{0}'", args.Name);
+            Log.Verbose("Attempting to resolve assembly reference '{0}'", args.Name);
 
-			Assembly[] list = AppDomain.CurrentDomain.ReflectionOnlyGetAssemblies();
-			foreach (Assembly asm in list)
-			{
-				if (asm.FullName == args.Name)
-				{
-					return asm;
-				}
-			}
+            Assembly[] list = AppDomain.CurrentDomain.ReflectionOnlyGetAssemblies();
+            foreach (Assembly asm in list)
+            {
+                if (asm.FullName == args.Name)
+                {
+                    return asm;
+                }
+            }
 
             if (_config.ReferenceDirectories != null)
             {
@@ -163,35 +166,35 @@ namespace BitDiffer.Extractor
                 }
             }
 
-			if (assembly == null)
-			{
-				Log.Error("Could not resolve assembly reference '{0}'.", args.Name);
-			}
-			else
-			{
-				Log.Verbose("Assembly loaded.");
-			}
+            if (assembly == null)
+            {
+                Log.Error("Could not resolve assembly reference '{0}'.", args.Name);
+            }
+            else
+            {
+                Log.Verbose("Assembly loaded.");
+            }
 
-			return assembly;
-		}
+            return assembly;
+        }
 
-		private static Assembly domain_AssemblyResolve(object sender, ResolveEventArgs args)
-		{
-			// Apparently a bug in .NET... it has trouble resolving assemblies that are already loaded!
-			Assembly[] list = AppDomain.CurrentDomain.GetAssemblies();
-			foreach (Assembly asm in list)
-			{
-				if (asm.FullName == args.Name)
-				{
-					Log.Verbose("Resolving assembly {0} that is already loaded", asm.FullName);
-					return asm;
-				}
-			}
+        private static Assembly domain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            // Apparently a bug in .NET... it has trouble resolving assemblies that are already loaded!
+            Assembly[] list = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (Assembly asm in list)
+            {
+                if (asm.FullName == args.Name)
+                {
+                    Log.Verbose("Resolving assembly {0} that is already loaded", asm.FullName);
+                    return asm;
+                }
+            }
 
-      //If the Assembly we're trying to resolve cannot ever be resolved (because the Assembly in question is missing from GAC 
+      //If the Assembly we're trying to resolve cannot ever be resolved (because the Assembly in question is missing from GAC
       //and is not included locally, for example) Assembly.Load will cause a recursive loop resulting in a StackOverflowException.
-      //To avoid this we need to unregister this event handler from the AssemblyResolve event whilst we attempt to 
-      //load this assembly. 
+      //To avoid this we need to unregister this event handler from the AssemblyResolve event whilst we attempt to
+      //load this assembly.
       //MSDN actually has an example of how we should not Assembly.Load inside this event.
       //see "What the Event Handler Should Not Do" @ https://msdn.microsoft.com/en-us/library/ff527268%28v=vs.110%29.aspx
       AppDomain.CurrentDomain.AssemblyResolve -= domain_AssemblyResolve;
@@ -199,62 +202,62 @@ namespace BitDiffer.Extractor
       AppDomain.CurrentDomain.AssemblyResolve += domain_AssemblyResolve;
       return loadedAsm;
 
-		}
+        }
 
-		private Assembly LoadAssemblyFromGAC(string name)
-		{
-			Log.Verbose("Searching for assembly '{0}' in GAC", name);
+        private Assembly LoadAssemblyFromGAC(string name)
+        {
+            Log.Verbose("Searching for assembly '{0}' in GAC", name);
 
-			try
-			{
-				Assembly assembly = Assembly.ReflectionOnlyLoad(name);
-				if (assembly != null)
-				{
-					Log.Verbose("Resolving assembly {0} from GAC", name);
-					return assembly;
-				}
-			}
-			catch
-			{
-			}
+            try
+            {
+                Assembly assembly = Assembly.ReflectionOnlyLoad(name);
+                if (assembly != null)
+                {
+                    Log.Verbose("Resolving assembly {0} from GAC", name);
+                    return assembly;
+                }
+            }
+            catch
+            {
+            }
 
-			return null;
-		}
+            return null;
+        }
 
         private Assembly LoadAssemblyFromFile(string name)
         {
             return LoadAssemblyFromFile(name, Path.GetDirectoryName(_assemblyFile));
         }
 
-		private Assembly LoadAssemblyFromFile(string name, string dir)
-		{
-			// Try to load from file
-			if (name.IndexOf(',') > 0)
-			{
-				name = name.Substring(0, name.IndexOf(','));
-			}
+        private Assembly LoadAssemblyFromFile(string name, string dir)
+        {
+            // Try to load from file
+            if (name.IndexOf(',') > 0)
+            {
+                name = name.Substring(0, name.IndexOf(','));
+            }
 
             string fileName = Path.Combine(dir, name);
 
-			if (!fileName.EndsWith(".dll"))
-			{
-				fileName += ".dll";
-			}
+            if (!fileName.EndsWith(".dll"))
+            {
+                fileName += ".dll";
+            }
 
-			Log.Verbose("Searching for assembly file '{0}'", fileName);
+            Log.Verbose("Searching for assembly file '{0}'", fileName);
 
-			if (File.Exists(fileName))
-			{
-				Log.Verbose("Resolving assembly {0} from file", name);
-				return Assembly.ReflectionOnlyLoadFrom(fileName);
-			}
+            if (File.Exists(fileName))
+            {
+                Log.Verbose("Resolving assembly {0} from file", name);
+                return Assembly.ReflectionOnlyLoadFrom(fileName);
+            }
 
             return null;
-		}
+        }
 
-		public void AddTraceListener(TraceListener listener)
-		{
-			Trace.Listeners.Add(listener);
-		}
-	}
+        public void AddTraceListener(TraceListener listener)
+        {
+            Trace.Listeners.Add(listener);
+        }
+    }
 }

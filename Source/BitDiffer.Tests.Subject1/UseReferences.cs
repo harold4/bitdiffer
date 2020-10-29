@@ -4,15 +4,15 @@ using System.Text;
 
 namespace BitDiffer.Tests.Subject
 {
-	public class UseReferences
-	{
-		public Reference.ReferencedClass1 UseAllReferences()
-		{
-			System.Data.DataTable dt = new System.Data.DataTable();
-			System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+    public class UseReferences
+    {
+        public Reference.ReferencedClass1 UseAllReferences()
+        {
+            System.Data.DataTable dt = new System.Data.DataTable();
+            System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
 
-			Console.WriteLine(Reference.ReferencedClass1.UseMe().ToString());
-			return Reference.ReferencedClass1.UseMe();
-		}
-	}
+            Console.WriteLine(Reference.ReferencedClass1.UseMe().ToString());
+            return Reference.ReferencedClass1.UseMe();
+        }
+    }
 }

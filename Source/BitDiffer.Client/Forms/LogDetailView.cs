@@ -11,20 +11,20 @@ using BitDiffer.Client.Properties;
 
 namespace BitDiffer.Client.Forms
 {
-	public partial class LogDetailView : Form
-	{
-		public LogDetailView()
-		{
-			InitializeComponent();
+    public partial class LogDetailView : Form
+    {
+        public LogDetailView()
+        {
+            InitializeComponent();
 
-			this.Icon = Resources.App;
-			this.Text = string.Format("{0} {1}", Constants.ProductName, Assembly.GetExecutingAssembly().GetName().Version);
-		}
+            this.Icon = Resources.App;
+            this.Text = string.Format("{0} {1}", Constants.ProductName, Assembly.GetExecutingAssembly().GetName().Version);
+        }
 
-		public LogDetailView(string message)
-			: this()
-		{
-			textBox1.Text = message;
-		}
-	}
+        public LogDetailView(string message)
+            : this()
+        {
+            textBox1.Text = message;
+        }
+    }
 }

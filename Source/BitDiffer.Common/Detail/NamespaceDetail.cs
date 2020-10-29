@@ -5,52 +5,52 @@ using BitDiffer.Common.Utility;
 
 namespace BitDiffer.Common.Model
 {
-	[Serializable]
-	public class NamespaceDetail : ParentDetail
-	{
-		public NamespaceDetail()
-		{
-		}
+    [Serializable]
+    public class NamespaceDetail : ParentDetail
+    {
+        public NamespaceDetail()
+        {
+        }
 
-		public NamespaceDetail(RootDetail parent, string name)
-			: base(parent, name)
-		{
-		}
+        public NamespaceDetail(RootDetail parent, string name)
+            : base(parent, name)
+        {
+        }
 
-		protected override bool FullNameRoot
-		{
-			get { return true; }
-		}
+        protected override bool FullNameRoot
+        {
+            get { return true; }
+        }
 
-		protected override bool SerializeShouldWriteName()
-		{
-			return true;
-		}
+        protected override bool SerializeShouldWriteName()
+        {
+            return true;
+        }
 
-		public override bool ExcludeFromReport
-		{
-			get { return true; }
-		}
+        public override bool ExcludeFromReport
+        {
+            get { return true; }
+        }
 
-		protected override bool SuppressBreakingChangesInChildren
-		{
-			get { return false; }
-		}
+        protected override bool SuppressBreakingChangesInChildren
+        {
+            get { return false; }
+        }
 
-		public override bool ExcludeChildrenFromReport
-		{
-			get { return this.CollapseChildren; }// || ChangeTypeUtil.IsNonBreakingAddRemove(CombineAllChangesThisInstanceGoingForward()); }
-		}
+        public override bool ExcludeChildrenFromReport
+        {
+            get { return this.CollapseChildren; }// || ChangeTypeUtil.IsNonBreakingAddRemove(CombineAllChangesThisInstanceGoingForward()); }
+        }
 
 
-		public override string GetTextTitle()
-		{
-			return "namespace " + _name;
-		}
+        public override string GetTextTitle()
+        {
+            return "namespace " + _name;
+        }
 
-		protected override string SerializeGetElementName()
-		{
-			return "Namespace";
-		}
-	}
+        protected override string SerializeGetElementName()
+        {
+            return "Namespace";
+        }
+    }
 }

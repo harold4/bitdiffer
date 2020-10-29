@@ -15,18 +15,18 @@ using System.Collections;
 
 namespace BitDiffer.Core
 {
-	[Serializable]
-	public class AssemblyManagerIsolationHigh : AssemblyManager
-	{
-		protected override DomainExtractorPair GetExtractor(string path)
-		{
-			return GetExtractorInTempAppDomain(path);
-		}
+    [Serializable]
+    public class AssemblyManagerIsolationHigh : AssemblyManager
+    {
+        protected override DomainExtractorPair GetExtractor(string path)
+        {
+            return GetExtractorInTempAppDomain(path);
+        }
 
-		protected override void OneExtractionComplete(DomainExtractorPair pair)
-		{
-			Log.Verbose("Unloading " + pair.Domain.FriendlyName);
-			AppDomain.Unload(pair.Domain);
-		}
-	}
+        protected override void OneExtractionComplete(DomainExtractorPair pair)
+        {
+            Log.Verbose("Unloading " + pair.Domain.FriendlyName);
+            AppDomain.Unload(pair.Domain);
+        }
+    }
 }

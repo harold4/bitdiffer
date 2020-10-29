@@ -11,76 +11,76 @@ using BitDiffer.Common.Configuration;
 
 namespace BitDiffer.Common.Model
 {
-	[Serializable]
-	public class ResourceDetail : RootDetail
-	{
-		private string _contentHash;
+    [Serializable]
+    public class ResourceDetail : RootDetail
+    {
+        private string _contentHash;
 
-		public ResourceDetail()
-		{
-		}
+        public ResourceDetail()
+        {
+        }
 
-		public ResourceDetail(RootDetail parent, string name, byte[] content)
-			: base(parent, name)
-		{
-			_contentHash = GenericUtility.GetHashText(content);
-		}
+        public ResourceDetail(RootDetail parent, string name, byte[] content)
+            : base(parent, name)
+        {
+            _contentHash = GenericUtility.GetHashText(content);
+        }
 
-		public override string GetTextTitle()
-		{
-			return "Embedded resource " + _name;
-		}
+        public override string GetTextTitle()
+        {
+            return "Embedded resource " + _name;
+        }
 
-		public override string ToString()
-		{
-			return _contentHash;
-		}
+        public override string ToString()
+        {
+            return _contentHash;
+        }
 
-		protected override bool FullNameRoot
-		{
-			get { return true; }
-		}
+        protected override bool FullNameRoot
+        {
+            get { return true; }
+        }
 
-		protected override ChangeType CompareInstance(ICanCompare previous, bool suppressBreakingChanges)
-		{
-			ChangeType change = base.CompareInstance(previous, suppressBreakingChanges);
+        protected override ChangeType CompareInstance(ICanCompare previous, bool suppressBreakingChanges)
+        {
+            ChangeType change = base.CompareInstance(previous, suppressBreakingChanges);
 
-			ResourceDetail other = (ResourceDetail)previous;
+            ResourceDetail other = (ResourceDetail)previous;
 
-			if (string.Compare(_contentHash, other._contentHash) != 0)
-			{
-				change |= ChangeType.ContentChanged;
-			}
+            if (string.Compare(_contentHash, other._contentHash) != 0)
+            {
+                change |= ChangeType.ContentChanged;
+            }
 
-			return change;
-		}
+            return change;
+        }
 
-		public string ContentHash
-		{
-			get { return _contentHash; }
-			set { _contentHash = value; }
-		}
+        public string ContentHash
+        {
+            get { return _contentHash; }
+            set { _contentHash = value; }
+        }
 
-		protected override void SerializeWriteRawContent(XmlWriter writer)
-		{
-			base.SerializeWriteRawContent(writer);
+        protected override void SerializeWriteRawContent(XmlWriter writer)
+        {
+            base.SerializeWriteRawContent(writer);
 
-			writer.WriteAttributeString("ContentHash", _contentHash);
-		}
+            writer.WriteAttributeString("ContentHash", _contentHash);
+        }
 
-		protected override string SerializeGetElementName()
-		{
-			return "Resource";
-		}
+        protected override string SerializeGetElementName()
+        {
+            return "Resource";
+        }
 
-		protected override void ApplyFilterInstance(ComparisonFilter filter)
-		{
-			base.ApplyFilterInstance(filter);
+        protected override void ApplyFilterInstance(ComparisonFilter filter)
+        {
+            base.ApplyFilterInstance(filter);
 
-			if (!filter.CompareMethodImplementations)
-			{
-				_changeThisInstance &= ~ChangeType.ContentChanged;
-			}
-		}
-	}
+            if (!filter.CompareMethodImplementations)
+            {
+                _changeThisInstance &= ~ChangeType.ContentChanged;
+            }
+        }
+    }
 }

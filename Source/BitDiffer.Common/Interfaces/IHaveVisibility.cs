@@ -7,12 +7,12 @@ using BitDiffer.Common.Misc;
 
 namespace BitDiffer.Common.Interfaces
 {
-	public interface IHaveVisibility
-	{
-		Visibility Visibility
-		{
-			get;
-			set;
-		}
-	}
+    public interface IHaveVisibility
+    {
+        Visibility Visibility
+        {
+            get;
+            set;
+        }
+    }
 }

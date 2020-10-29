@@ -11,15 +11,15 @@ using BitDiffer.Common.Misc;
 
 namespace BitDiffer.Client.Controls
 {
-	public partial class ReferencePaths : UserControl
-	{
+    public partial class ReferencePaths : UserControl
+    {
         public ReferencePaths()
-		{
-			InitializeComponent();
-		}
+        {
+            InitializeComponent();
+        }
 
-		internal void LoadOptions(DiffConfig config)
-		{
+        internal void LoadOptions(DiffConfig config)
+        {
             if (string.IsNullOrEmpty(config.ReferenceDirectories))
             {
                 gridFolders.Items = new List<string>();
@@ -28,11 +28,11 @@ namespace BitDiffer.Client.Controls
             {
                 gridFolders.Items = new List<string>(config.ReferenceDirectories.Split(';'));
             }
-		}
+        }
 
         internal void SaveOptions(DiffConfig config)
-		{
+        {
             config.ReferenceDirectories = string.Join(";", gridFolders.Items);
         }
-	}
+    }
 }

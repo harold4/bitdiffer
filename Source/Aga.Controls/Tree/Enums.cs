@@ -4,42 +4,42 @@ using System.Text;
 
 namespace Aga.Controls.Tree
 {
-	public enum DrawSelectionMode
-	{
-		None, Active, Inactive, FullRowSelect
-	}
+    public enum DrawSelectionMode
+    {
+        None, Active, Inactive, FullRowSelect
+    }
 
-	public enum TreeSelectionMode
-	{
-		Single, Multi, MultiSameParent
-	}
+    public enum TreeSelectionMode
+    {
+        Single, Multi, MultiSameParent
+    }
 
-	public enum ColumnSelectionMode
-	{
-		All, Single
-	}
+    public enum ColumnSelectionMode
+    {
+        All, Single
+    }
 
-	public enum NodePosition
-	{
-		Inside, Before, After
-	}
+    public enum NodePosition
+    {
+        Inside, Before, After
+    }
 
-	public enum VerticalAlignment
-	{
-		Top, Bottom, Center
-	}
+    public enum VerticalAlignment
+    {
+        Top, Bottom, Center
+    }
 
-	public enum IncrementalSearchMode
-	{
-		None, Standard, Continuous
-	}
+    public enum IncrementalSearchMode
+    {
+        None, Standard, Continuous
+    }
 
-	[Flags]
+    [Flags]
     public enum GridLineStyle
     {
-		None = 0, 
-		Horizontal = 1, 
-		Vertical = 2, 
-		HorizontalAndVertical = 3
+        None = 0,
+        Horizontal = 1,
+        Vertical = 2,
+        HorizontalAndVertical = 3
     }
 }

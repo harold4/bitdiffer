@@ -10,94 +10,94 @@ using BitDiffer.Common.Configuration;
 
 namespace BitDiffer.Common.Model
 {
-	[Serializable]
-	public class ReferenceDetail : RootDetail
-	{
-		private string _assemblyName;
+    [Serializable]
+    public class ReferenceDetail : RootDetail
+    {
+        private string _assemblyName;
 
-		public ReferenceDetail()
-		{
-		}
+        public ReferenceDetail()
+        {
+        }
 
-		public ReferenceDetail(RootDetail parent, AssemblyName name)
-		{
-			_assemblyName = name.FullName;
-			_parent = parent;
+        public ReferenceDetail(RootDetail parent, AssemblyName name)
+        {
+            _assemblyName = name.FullName;
+            _parent = parent;
 
-			if (name.FullName.IndexOf(',') > 0)
-			{
-				_name = name.FullName.Substring(0, name.FullName.IndexOf(','));
-			}
-			else
-			{
-				_name = name.FullName;
-			}
-		}
+            if (name.FullName.IndexOf(',') > 0)
+            {
+                _name = name.FullName.Substring(0, name.FullName.IndexOf(','));
+            }
+            else
+            {
+                _name = name.FullName;
+            }
+        }
 
-		public override string ToString()
-		{
-			return _assemblyName;
-		}
+        public override string ToString()
+        {
+            return _assemblyName;
+        }
 
-		public override string GetTextTitle()
-		{
-			return "Reference to " + _name;
-		}
+        public override string GetTextTitle()
+        {
+            return "Reference to " + _name;
+        }
 
-		public override string GetHtmlDeclaration()
-		{
-			return _assemblyName;
-		}
+        public override string GetHtmlDeclaration()
+        {
+            return _assemblyName;
+        }
 
-		public override string GetMarkdownDeclaration()
-		{
-			return _assemblyName;
-		}
+        public override string GetMarkdownDeclaration()
+        {
+            return _assemblyName;
+        }
 
-		protected override bool FullNameRoot
-		{
-			get { return true; }
-		}
+        protected override bool FullNameRoot
+        {
+            get { return true; }
+        }
 
-		protected override ChangeType CompareInstance(ICanCompare previous, bool suppressBreakingChanges)
-		{
-			ChangeType change = base.CompareInstance(previous, suppressBreakingChanges);
+        protected override ChangeType CompareInstance(ICanCompare previous, bool suppressBreakingChanges)
+        {
+            ChangeType change = base.CompareInstance(previous, suppressBreakingChanges);
 
-			ReferenceDetail other = (ReferenceDetail)previous;
+            ReferenceDetail other = (ReferenceDetail)previous;
 
-			if (string.Compare(_assemblyName, other._assemblyName) != 0)
-			{
-				change |= ChangeType.ValueChangedNonBreaking;
-			}
+            if (string.Compare(_assemblyName, other._assemblyName) != 0)
+            {
+                change |= ChangeType.ValueChangedNonBreaking;
+            }
 
-			return change;
-		}
+            return change;
+        }
 
-		public string AssemblyName
-		{
-			get { return _assemblyName; }
-			set { _assemblyName = value; }
-		}
+        public string AssemblyName
+        {
+            get { return _assemblyName; }
+            set { _assemblyName = value; }
+        }
 
-		protected override void SerializeWriteRawContent(XmlWriter writer)
-		{
-			base.SerializeWriteRawContent(writer);
+        protected override void SerializeWriteRawContent(XmlWriter writer)
+        {
+            base.SerializeWriteRawContent(writer);
 
-			writer.WriteAttributeString("AssemblyName", _assemblyName);
-		}
+            writer.WriteAttributeString("AssemblyName", _assemblyName);
+        }
 
-		protected override string SerializeGetElementName()
-		{
-			return "Reference";
-		}
+        protected override string SerializeGetElementName()
+        {
+            return "Reference";
+        }
 
-		protected override bool ShouldWriteHtmlSummaryForChange
-		{
-			get
-			{
-				// Reference: it's obviously a value change, don't report a non-breaking change.
-				return Change != ChangeType.ValueChangedNonBreaking && base.ShouldWriteHtmlSummaryForChange;
-			}
-		}
-	}
+        protected override bool ShouldWriteHtmlSummaryForChange
+        {
+            get
+            {
+                // Reference: it's obviously a value change, don't report a non-breaking change.
+                return Change != ChangeType.ValueChangedNonBreaking && base.ShouldWriteHtmlSummaryForChange;
+            }
+        }
+    }
 }

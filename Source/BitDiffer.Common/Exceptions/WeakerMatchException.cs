@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BitDiffer.Common.Exceptions
 {
-	public class WeakerMatchException : Exception
-	{
-	}
+    public class WeakerMatchException : Exception
+    {
+    }
 }

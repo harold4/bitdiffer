@@ -4,18 +4,18 @@ using System.Text;
 
 namespace Aga.Controls.Tree
 {
-	public class TreeViewAdvEventArgs : EventArgs
-	{
-		private TreeNodeAdv _node;
+    public class TreeViewAdvEventArgs : EventArgs
+    {
+        private TreeNodeAdv _node;
 
-		public TreeNodeAdv Node
-		{
-			get { return _node; }
-		}
+        public TreeNodeAdv Node
+        {
+            get { return _node; }
+        }
 
-		public TreeViewAdvEventArgs(TreeNodeAdv node)
-		{
-			_node = node;
-		}
-	}
+        public TreeViewAdvEventArgs(TreeNodeAdv node)
+        {
+            _node = node;
+        }
+    }
 }

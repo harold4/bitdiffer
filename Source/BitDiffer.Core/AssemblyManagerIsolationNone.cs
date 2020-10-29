@@ -15,25 +15,25 @@ using System.Collections;
 
 namespace BitDiffer.Core
 {
-	[Serializable]
-	public class AssemblyManagerIsolationNone : AssemblyManager
-	{
-		private DomainExtractorPair _pair;
+    [Serializable]
+    public class AssemblyManagerIsolationNone : AssemblyManager
+    {
+        private DomainExtractorPair _pair;
 
-		protected override DomainExtractorPair GetExtractor(string path)
-		{
-			if (_pair == null)
-			{
-				lock (typeof(AssemblyManager))
-				{
-					if (_pair == null)
-					{
-						_pair = new DomainExtractorPair(AppDomain.CurrentDomain, new AssemblyExtractor());
-					}
-				}
-			}
+        protected override DomainExtractorPair GetExtractor(string path)
+        {
+            if (_pair == null)
+            {
+                lock (typeof(AssemblyManager))
+                {
+                    if (_pair == null)
+                    {
+                        _pair = new DomainExtractorPair(AppDomain.CurrentDomain, new AssemblyExtractor());
+                    }
+                }
+            }
 
-			return _pair;
-		}
-	}
+            return _pair;
+        }
+    }
 }

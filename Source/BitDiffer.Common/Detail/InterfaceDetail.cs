@@ -4,22 +4,22 @@ using System.Text;
 
 namespace BitDiffer.Common.Model
 {
-	[Serializable]
-	public class InterfaceDetail : EntityDetail
-	{
-		public InterfaceDetail()
-		{
-		}
+    [Serializable]
+    public class InterfaceDetail : EntityDetail
+    {
+        public InterfaceDetail()
+        {
+        }
 
-		public InterfaceDetail(RootDetail parent, Type type)
-			: base(parent, type, true)
-		{
-			_category = "interface";
-		}
+        public InterfaceDetail(RootDetail parent, Type type)
+            : base(parent, type, true)
+        {
+            _category = "interface";
+        }
 
-		protected override string SerializeGetElementName()
-		{
-			return "Interface";
-		}
-	}
+        protected override string SerializeGetElementName()
+        {
+            return "Interface";
+        }
+    }
 }

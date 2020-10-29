@@ -8,42 +8,42 @@ using BitDiffer.Common.Misc;
 
 namespace BitDiffer.Common.Model
 {
-	[Serializable]
-	public class EventDetail : MemberDetail
-	{
-		public EventDetail()
-		{
-		}
+    [Serializable]
+    public class EventDetail : MemberDetail
+    {
+        public EventDetail()
+        {
+        }
 
-		public EventDetail(RootDetail parent, EventInfo ei)
-			: base(parent, ei)
-		{
-			_name = ei.Name;
-			_visibility = VisibilityUtil.GetVisibilityFor(ei.GetAddMethod(true));
-			_category = "event";
+        public EventDetail(RootDetail parent, EventInfo ei)
+            : base(parent, ei)
+        {
+            _name = ei.Name;
+            _visibility = VisibilityUtil.GetVisibilityFor(ei.GetAddMethod(true));
+            _category = "event";
 
-			CodeStringBuilder csb = new CodeStringBuilder();
+            CodeStringBuilder csb = new CodeStringBuilder();
 
-			AppendAttributesDeclaration(csb);
+            AppendAttributesDeclaration(csb);
 
-			csb.Mode = AppendMode.NonText;
-			csb.AppendVisibility(_visibility);
-			csb.AppendText(" ");
-			csb.Mode = AppendMode.All;
+            csb.Mode = AppendMode.NonText;
+            csb.AppendVisibility(_visibility);
+            csb.AppendText(" ");
+            csb.Mode = AppendMode.All;
 
-			csb.AppendKeyword("event ");
-			csb.AppendType(ei.EventHandlerType);
-			csb.AppendText(" ");
-			csb.AppendText(ei.Name);
+            csb.AppendKeyword("event ");
+            csb.AppendType(ei.EventHandlerType);
+            csb.AppendText(" ");
+            csb.AppendText(ei.Name);
 
-			_declaration = csb.ToString();
-			_declarationHtml = csb.ToHtmlString();
-			_declarationMarkdown = csb.ToMarkdownString();
-		}
+            _declaration = csb.ToString();
+            _declarationHtml = csb.ToHtmlString();
+            _declarationMarkdown = csb.ToMarkdownString();
+        }
 
-		protected override string SerializeGetElementName()
-		{
-			return "Event";
-		}
-	}
+        protected override string SerializeGetElementName()
+        {
+            return "Event";
+        }
+    }
 }

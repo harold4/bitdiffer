@@ -4,9 +4,9 @@ using System.Text;
 
 namespace BitDiffer.Common.Misc
 {
-	public enum Status
-	{
-		Present,
-		Missing
-	};
+    public enum Status
+    {
+        Present,
+        Missing
+    };
 }

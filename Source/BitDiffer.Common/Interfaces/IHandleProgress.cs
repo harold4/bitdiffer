@@ -8,12 +8,12 @@ using BitDiffer.Common.Misc;
 
 namespace BitDiffer.Common.Interfaces
 {
-	public interface IHandleProgress
-	{
-		void SetMaxRange(int max);
+    public interface IHandleProgress
+    {
+        void SetMaxRange(int max);
 
-		void UpdateProgress(ProgressStatus progress);
+        void UpdateProgress(ProgressStatus progress);
 
-		bool CancelRequested { get; }
-	}
+        bool CancelRequested { get; }
+    }
 }

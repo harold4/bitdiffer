@@ -8,60 +8,60 @@ using BitDiffer.Common.Misc;
 
 namespace BitDiffer.Common.Model
 {
-	[Serializable]
-	public class FieldDetail : MemberDetail
-	{
-		public FieldDetail()
-		{
-		}
+    [Serializable]
+    public class FieldDetail : MemberDetail
+    {
+        public FieldDetail()
+        {
+        }
 
-		public FieldDetail(RootDetail parent, FieldInfo fi)
-			: base(parent, fi)
-		{
-			_name = fi.Name;
-			_visibility = VisibilityUtil.GetVisibilityFor(fi);
-			_category = "field";
+        public FieldDetail(RootDetail parent, FieldInfo fi)
+            : base(parent, fi)
+        {
+            _name = fi.Name;
+            _visibility = VisibilityUtil.GetVisibilityFor(fi);
+            _category = "field";
 
-			CodeStringBuilder csb = new CodeStringBuilder();
+            CodeStringBuilder csb = new CodeStringBuilder();
 
-			AppendAttributesDeclaration(csb);
+            AppendAttributesDeclaration(csb);
 
-			csb.Mode = AppendMode.NonText;
-			csb.AppendVisibility(_visibility);
-			csb.AppendText(" ");
-			csb.Mode = AppendMode.All;
+            csb.Mode = AppendMode.NonText;
+            csb.AppendVisibility(_visibility);
+            csb.AppendText(" ");
+            csb.Mode = AppendMode.All;
 
-			if (fi.IsLiteral)
-			{
-				csb.AppendKeyword("const ");
-			}
-			else if (fi.IsStatic)
-			{
-				csb.AppendKeyword("static ");
-			}
+            if (fi.IsLiteral)
+            {
+                csb.AppendKeyword("const ");
+            }
+            else if (fi.IsStatic)
+            {
+                csb.AppendKeyword("static ");
+            }
 
-			if (fi.IsInitOnly)
-			{
-				csb.AppendKeyword("readonly ");
-			}
+            if (fi.IsInitOnly)
+            {
+                csb.AppendKeyword("readonly ");
+            }
 
-			csb.AppendType(fi.FieldType);
-			csb.AppendText(" ");
-			csb.AppendText(fi.Name);
+            csb.AppendType(fi.FieldType);
+            csb.AppendText(" ");
+            csb.AppendText(fi.Name);
 
-			if (fi.IsLiteral)
-			{
-				csb.AppendParameterValue(fi.GetRawConstantValue());
-			}
+            if (fi.IsLiteral)
+            {
+                csb.AppendParameterValue(fi.GetRawConstantValue());
+            }
 
-			_declaration = csb.ToString();
-			_declarationHtml = csb.ToHtmlString();
-			_declarationMarkdown = csb.ToMarkdownString();
-		}
+            _declaration = csb.ToString();
+            _declarationHtml = csb.ToHtmlString();
+            _declarationMarkdown = csb.ToMarkdownString();
+        }
 
-		protected override string SerializeGetElementName()
-		{
-			return "Field";
-		}
-	}
+        protected override string SerializeGetElementName()
+        {
+            return "Field";
+        }
+    }
 }

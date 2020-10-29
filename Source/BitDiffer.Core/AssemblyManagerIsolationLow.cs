@@ -15,34 +15,34 @@ using System.Collections;
 
 namespace BitDiffer.Core
 {
-	[Serializable]
-	public class AssemblyManagerIsolationLow : AssemblyManager
-	{
-		private DomainExtractorPair _pair;
+    [Serializable]
+    public class AssemblyManagerIsolationLow : AssemblyManager
+    {
+        private DomainExtractorPair _pair;
 
-		protected override DomainExtractorPair GetExtractor(string path)
-		{
-			if (_pair == null)
-			{
-				lock (typeof(AssemblyManager))
-				{
-					if (_pair == null)
-					{
-						_pair = GetExtractorInTempAppDomain(path);
-					}
-				}
-			}
+        protected override DomainExtractorPair GetExtractor(string path)
+        {
+            if (_pair == null)
+            {
+                lock (typeof(AssemblyManager))
+                {
+                    if (_pair == null)
+                    {
+                        _pair = GetExtractorInTempAppDomain(path);
+                    }
+                }
+            }
 
-			return _pair;
-		}
+            return _pair;
+        }
 
-		internal override void AllExtractionsComplete()
-		{
-			if (_pair != null)
-			{
-				Log.Verbose("Unloading " + _pair.Domain.FriendlyName);
-				AppDomain.Unload(_pair.Domain);
-			}
-		}
-	}
+        internal override void AllExtractionsComplete()
+        {
+            if (_pair != null)
+            {
+                Log.Verbose("Unloading " + _pair.Domain.FriendlyName);
+                AppDomain.Unload(_pair.Domain);
+            }
+        }
+    }
 }
